@@ -2,29 +2,200 @@
 <html lang="id">
 
 <head>
-  <title>Booking Ruangan | PS Rental</title>
-
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Font -->
-  <link rel="stylesheet" href="{{ asset('assets/fonts/inter/inter.css') }}">
+  <title>Booking Ruangan | PS Rental</title>
 
-  <!-- Icons -->
+  <!-- BOOTSTRAP 5 -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet">
+
+  <!-- TABLER ICON -->
   <link rel="stylesheet" href="{{ asset('assets/fonts/tabler-icons.min.css') }}">
 
-  <!-- Template CSS -->
-  <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
-  <link rel="stylesheet" href="{{ asset('assets/css/style-preset.css') }}">
+  <!-- FONT -->
+  <link rel="stylesheet" href="{{ asset('assets/fonts/inter/inter.css') }}">
 
   <style>
+    /* ================= GLOBAL ================= */
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f8f9fa;
+      color: #212529;
+    }
+
+    /* ================= SIDEBAR ================= */
+    .sidebar {
+      width: 280px;
+      min-height: 100vh;
+      position: fixed;
+      left: 0;
+      top: 0;
+      background: #ffffff;
+      border-right: 1px solid #dee2e6;
+      padding: 24px 16px;
+      z-index: 1000;
+      overflow-y: auto;
+      transition: transform 0.25s;
+    }
+
+    .brand {
+      font-size: 25px;
+      font-weight: 700;
+      color: #3b82f6;
+      text-decoration: none;
+      display: block;
+      padding: 0 10px 25px;
+    }
+
+    .user-card {
+      background: #f8f9fa;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 25px;
+    }
+
+    .user-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .user-name {
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .user-role {
+      color: #6c757d;
+      font-size: 14px;
+    }
+
+    .menu-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #495057;
+      text-transform: uppercase;
+      padding: 0 18px;
+      margin-bottom: 10px;
+    }
+
+    .sidebar-menu {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .sidebar-menu li {
+      margin-bottom: 6px;
+    }
+
+    .sidebar-menu a {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 13px 18px;
+      color: #64748b;
+      text-decoration: none;
+      border-radius: 10px;
+      transition: 0.2s;
+      font-size: 15px;
+    }
+
+    .sidebar-menu a:hover {
+      background: #f1f5f9;
+      color: #3b82f6;
+    }
+
+    .sidebar-menu a.active {
+      background: #e8f0ff;
+      color: #3b82f6;
+      font-weight: 600;
+    }
+
+    .sidebar-menu i {
+      font-size: 21px;
+    }
+
+    .logout-box {
+      margin-top: 20px;
+    }
+
+    .logout-btn {
+      width: 100%;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      color: #dc3545;
+      padding: 14px;
+      border-radius: 12px;
+      text-align: left;
+      font-weight: 600;
+    }
+
+    /* ================= MAIN ================= */
+    .main-content {
+      margin-left: 280px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .top-header {
+      height: 80px;
+      background: #ffffff;
+      border-bottom: 1px solid #dee2e6;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 35px;
+    }
+
+    .header-date {
+      color: #6c757d;
+      font-size: 14px;
+    }
+
+    .menu-toggle {
+      border: none;
+      background: transparent;
+      font-size: 24px;
+      line-height: 1;
+      padding: 0;
+    }
+
+    .content {
+      padding: 35px;
+      flex: 1;
+    }
+
+    /* ================= CARD ================= */
+    .card {
+      border: 0;
+      border-radius: 12px;
+      box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075);
+    }
+
+    .card-header {
+      background: #ffffff;
+      border-bottom: 1px solid #eeeeee;
+    }
+
+    .bg-light-primary {
+      background-color: #e8f0ff !important;
+    }
+
+    /* ================= BOOKING ================= */
     .booking-card {
       transition: transform 0.2s, box-shadow 0.2s;
     }
 
     .booking-card:hover {
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
     }
 
     .price-box {
@@ -32,166 +203,155 @@
       border: 1px dashed #cbd5e1;
       border-radius: 10px;
     }
+
+    /* ================= FOOTER ================= */
+    footer {
+      padding: 25px 35px;
+      color: #6c757d;
+      font-size: 14px;
+    }
+
+    /* ================= RESPONSIVE ================= */
+    @media (max-width: 991px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.show {
+        transform: translateX(0);
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.15);
+      }
+
+      .main-content {
+        margin-left: 0;
+      }
+
+      .top-header {
+        padding: 0 20px;
+      }
+
+      .content {
+        padding: 20px;
+      }
+
+      footer {
+        padding: 20px;
+      }
+    }
   </style>
 </head>
 
-<body
-  data-pc-preset="preset-1"
-  data-pc-sidebar-caption="true"
-  data-pc-layout="vertical"
-  data-pc-direction="ltr"
-  data-pc-theme_contrast=""
-  data-pc-theme="light">
+<body>
 
   <!-- =========================================================
        SIDEBAR KASIR
   ========================================================== -->
-  <nav class="pc-sidebar">
-    <div class="navbar-wrapper">
+  <aside class="sidebar" id="sidebar">
 
-      <!-- LOGO -->
-      <div class="m-header">
-        <a href="/dashboard" class="b-brand text-primary">
-          <span class="fw-bold fs-4">PS Rental</span>
+    <!-- LOGO -->
+    <a href="/dashboard" class="brand">PS Rental</a>
+
+    <!-- USER CARD -->
+    <div class="user-card">
+      <div class="d-flex align-items-center">
+        <img
+          src="{{ asset('assets/images/user/avatar-1.jpg') }}"
+          class="user-avatar"
+          alt="user">
+
+        <div class="ms-3">
+          <div class="user-name" id="sidebarUsername">Kasir</div>
+          <div class="user-role" id="sidebarRole">Kasir</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MENU -->
+    <div class="menu-title">Menu Kasir</div>
+
+    <ul class="sidebar-menu">
+
+      <li>
+        <a href="/dashboard">
+          <i class="ti ti-home"></i>
+          <span>Dashboard</span>
         </a>
-      </div>
+      </li>
 
-      <!-- SIDEBAR CONTENT -->
-      <div class="navbar-content">
+      <li>
+        <a href="/booking" class="active">
+          <i class="ti ti-calendar-event"></i>
+          <span>Booking</span>
+        </a>
+      </li>
 
-        <!-- USER CARD -->
-        <div class="card pc-user-card">
-          <div class="card-body">
-            <div class="d-flex align-items-center">
-              <div class="flex-shrink-0">
-                <img src="{{ asset('assets/images/user/avatar-1.jpg') }}" class="user-avtar wid-45 rounded-circle" alt="user">
-              </div>
-              <div class="flex-grow-1 ms-3">
-                <h6 class="mb-0" id="sidebarUsername">Kasir</h6>
-                <small class="text-muted" id="sidebarRole">Kasir</small>
-              </div>
-            </div>
-          </div>
-        </div>
+      <li>
+        <a href="/ruangan">
+          <i class="ti ti-device-gamepad-2"></i>
+          <span>Ruangan</span>
+        </a>
+      </li>
 
-        <!-- MENU -->
-        <ul class="pc-navbar">
-          <li class="pc-item pc-caption">
-            <label>Menu Kasir</label>
-          </li>
+      <li>
+        <a href="/tracking">
+          <i class="ti ti-clock-play"></i>
+          <span>Tracking</span>
+        </a>
+      </li>
 
-          <!-- Dashboard -->
-          <li class="pc-item">
-            <a href="/dashboard" class="pc-link">
-              <span class="pc-micon">
-                <i class="ti ti-home"></i>
-              </span>
-              <span class="pc-mtext">Dashboard</span>
-            </a>
-          </li>
+      <li>
+        <a href="/laporan">
+          <i class="ti ti-report"></i>
+          <span>Laporan</span>
+        </a>
+      </li>
 
-          <!-- Booking (Active) -->
-          <li class="pc-item active">
-            <a href="/booking" class="pc-link">
-              <span class="pc-micon">
-                <i class="ti ti-calendar-event"></i>
-              </span>
-              <span class="pc-mtext">Booking</span>
-            </a>
-          </li>
+    </ul>
 
-          <!-- Ruangan -->
-          <li class="pc-item">
-            <a href="/ruangan" class="pc-link">
-              <span class="pc-micon">
-                <i class="ti ti-device-gamepad-2"></i>
-              </span>
-              <span class="pc-mtext">Ruangan</span>
-            </a>
-          </li>
-
-          <!-- Tracking -->
-          <li class="pc-item">
-            <a href="/tracking" class="pc-link">
-              <span class="pc-micon">
-                <i class="ti ti-clock-play"></i>
-              </span>
-              <span class="pc-mtext">Tracking</span>
-            </a>
-          </li>
-
-          <!-- Laporan -->
-          <li class="pc-item">
-            <a href="/laporan" class="pc-link">
-              <span class="pc-micon">
-                <i class="ti ti-report"></i>
-              </span>
-              <span class="pc-mtext">Laporan</span>
-            </a>
-          </li>
-        </ul>
-
-        <!-- LOGOUT -->
-        <div class="card mt-3">
-          <div class="card-body p-3">
-            <a href="#" class="d-flex align-items-center text-danger text-decoration-none" onclick="logout(); return false;">
-              <i class="ti ti-logout me-2 fs-5"></i>
-              <span class="fw-semibold">Logout</span>
-            </a>
-          </div>
-        </div>
-
-      </div>
+    <!-- LOGOUT -->
+    <div class="logout-box">
+      <button type="button" class="logout-btn" onclick="logout()">
+        <i class="ti ti-logout me-2"></i>
+        Logout
+      </button>
     </div>
-  </nav>
+
+  </aside>
 
   <!-- =========================================================
-       HEADER
+       MAIN
   ========================================================== -->
-  <header class="pc-header">
-    <div class="header-wrapper">
-      <div class="me-auto pc-mob-drp">
-        <ul class="list-unstyled mb-0">
-          <li class="pc-h-item pc-sidebar-collapse">
-            <a href="#" class="pc-head-link ms-0" id="sidebar-hide">
-              <i class="ti ti-menu-2"></i>
-            </a>
-          </li>
-          <li class="pc-h-item pc-sidebar-popup">
-            <a href="#" class="pc-head-link ms-0" id="mobile-collapse">
-              <i class="ti ti-menu-2"></i>
-            </a>
-          </li>
-        </ul>
+  <main class="main-content">
+
+    <!-- HEADER -->
+    <header class="top-header">
+
+      <div>
+        <button type="button" class="menu-toggle d-lg-none" id="menuToggle" aria-label="Menu">
+          <i class="ti ti-menu-2"></i>
+        </button>
       </div>
 
-      <div class="ms-auto">
-        <ul class="list-unstyled mb-0 d-flex align-items-center gap-3">
-          <!-- Tanggal -->
-          <li class="pc-h-item text-muted">
-            <i class="ti ti-calendar me-1"></i>
-            <span id="currentDate">-</span>
-          </li>
-          <!-- Jam -->
-          <li class="pc-h-item text-muted">
-            <i class="ti ti-clock me-1"></i>
-            <span id="currentTime">-</span>
-          </li>
-        </ul>
+      <div class="header-date d-flex align-items-center gap-3">
+        <span>
+          <i class="ti ti-calendar me-1"></i>
+          <span id="currentDate">-</span>
+        </span>
+        <span>
+          <i class="ti ti-clock me-1"></i>
+          <span id="currentTime">-</span>
+        </span>
       </div>
-    </div>
-  </header>
 
-  <!-- =========================================================
-       MAIN CONTENT
-  ========================================================== -->
-  <div class="pc-container">
-    <div class="pc-content">
+    </header>
+
+    <!-- CONTENT -->
+    <div class="content">
 
       <!-- JUDUL HALAMAN -->
       <div class="row mb-3">
         <div class="col-12">
-          <h4 class="mb-1">Kelola Booking PlayStation BestPlay</h4>
+          <h4 class="mb-1">Kelola Booking PlayStation</h4>
           <p class="text-muted mb-0">Input reservasi sewa ruangan PS, cek ketersediaan konsol, dan kelola jadwal pelanggan kasir.</p>
         </div>
       </div>
@@ -391,7 +551,20 @@
       </div>
 
     </div>
-  </div>
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="row">
+        <div class="col-sm my-1">
+          <p class="m-0">PS Rental © 2026</p>
+        </div>
+        <div class="col-auto my-1">
+          <p class="m-0 text-muted">Sistem Informasi Rental PS (2 User)</p>
+        </div>
+      </div>
+    </footer>
+
+  </main>
 
   <!-- =========================================================
        MODAL EDIT BOOKING
@@ -485,33 +658,61 @@
   </div>
 
   <!-- =========================================================
-       FOOTER
-  ========================================================== -->
-  <footer class="pc-footer">
-    <div class="footer-wrapper container-fluid">
-      <div class="row">
-        <div class="col-sm my-1">
-          <p class="m-0">PS Rental © 2026</p>
-        </div>
-        <div class="col-auto my-1">
-          <p class="m-0 text-muted">Sistem Informasi Rental PS (2 User)</p>
-        </div>
-      </div>
-    </div>
-  </footer>
-
-  <!-- =========================================================
        JAVASCRIPT
   ========================================================== -->
-  <script src="{{ asset('assets/js/plugins/popper.min.js') }}"></script>
-  <script src="{{ asset('assets/js/plugins/simplebar.min.js') }}"></script>
-  <script src="{{ asset('assets/js/plugins/bootstrap.min.js') }}"></script>
-  <script src="{{ asset('assets/js/script.js') }}"></script>
-  <script src="{{ asset('assets/js/theme.js') }}"></script>
-  <script src="{{ asset('assets/js/plugins/feather.min.js') }}"></script>
+
+  <!-- Bootstrap JS (sudah termasuk Popper) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <!-- Script Logika Booking -->
   <script src="{{ asset('assets/js/pages/booking.js') }}"></script>
+
+  <!-- Script layout: toggle sidebar, tanggal & jam -->
+  <script>
+    // Toggle sidebar di layar kecil
+    const sidebar = document.getElementById("sidebar");
+    const menuToggle = document.getElementById("menuToggle");
+
+    if (menuToggle) {
+      menuToggle.addEventListener("click", function () {
+        sidebar.classList.toggle("show");
+      });
+    }
+
+    // Tanggal & jam
+    function updateDateTime() {
+      const now = new Date();
+
+      document.getElementById("currentDate").textContent =
+        now.toLocaleDateString("id-ID", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric"
+        });
+
+      document.getElementById("currentTime").textContent =
+        now.toLocaleTimeString("id-ID", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit"
+        });
+    }
+
+    updateDateTime();
+    setInterval(updateDateTime, 1000);
+
+    // Logout (dipakai hanya jika belum didefinisikan di booking.js)
+    if (typeof window.logout !== "function") {
+      window.logout = function () {
+        if (confirm("Apakah Anda yakin ingin logout?")) {
+          localStorage.removeItem("role");
+          localStorage.removeItem("username");
+          window.location.href = "/login";
+        }
+      };
+    }
+  </script>
 
 </body>
 
