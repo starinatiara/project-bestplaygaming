@@ -375,7 +375,7 @@
 
   /*  LOGOUT  */
   function logout() {
-    if (confirm("Apakah Anda yakin ingin logout?")) {
+    if (confirm("Apakah Anda yakin ingin keluar?")) {
       localStorage.removeItem("role");
       localStorage.removeItem("username");
       window.location.href = "/login";
