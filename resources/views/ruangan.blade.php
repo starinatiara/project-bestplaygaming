@@ -75,13 +75,33 @@
       .content { padding: 20px; }
       body.sidebar-collapsed .sidebar { display: none; transform: none; }
     }
+
+    /* ===== DITAMBAHKAN: SIDEBAR MODE DRAWER DI MOBILE (SAMA SEPERTI BOOKING) ===== */
+    @media (max-width: 991px) {
+      body .sidebar,
+      body.sidebar-collapsed .sidebar {
+        display: block;
+        position: fixed;
+        width: 280px;
+        min-height: 100vh;
+        overflow-y: auto;
+        transform: translateX(-100%);
+      }
+
+      body .sidebar.show,
+      body.sidebar-collapsed .sidebar.show {
+        transform: translateX(0);
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.15);
+      }
+    }
   </style>
 </head>
 
 <body>
 
 <!-- ===================== SIDEBAR ===================== -->
-<aside class="sidebar">
+<!-- DITAMBAHKAN: id="sidebar" -->
+<aside class="sidebar" id="sidebar">
 
   <a href="/dashboard" class="brand">PS Rental</a>
 
@@ -185,7 +205,6 @@
       <button type="button" class="menu-toggle" id="menuToggle" aria-label="Toggle sidebar">
         <i class="ti ti-menu-2"></i>
       </button>
-      <h5 class="header-title">Jadwal Ruangan</h5>
     </div>
 
     <div class="header-date d-flex align-items-center gap-3">
@@ -413,6 +432,15 @@
     try {
       localStorage.setItem("sidebarCollapsed", collapsed ? "1" : "0");
     } catch (e) {}
+  });
+
+  /* ===== DITAMBAHKAN: DRAWER SIDEBAR DI MOBILE (SAMA SEPERTI BOOKING) ===== */
+  const sidebar = document.getElementById("sidebar");
+
+  menuToggle.addEventListener("click", function () {
+    if (window.innerWidth < 992) {
+      sidebar.classList.toggle("show");
+    }
   });
 </script>
 
