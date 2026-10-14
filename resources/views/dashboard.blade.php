@@ -823,7 +823,7 @@
 
       <a href="/ruangan">
 
-        <i class="ti ti-device-gamepad-2"></i>
+        <i class="ti ti-device-gamepad"></i>
 
         <span>
           Ruangan
@@ -838,7 +838,7 @@
 
       <a href="/tracking">
 
-        <i class="ti ti-clock-play"></i>
+        <i class="ti ti-receipt"></i>
 
         <span>
           Tracking

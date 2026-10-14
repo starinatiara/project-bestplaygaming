@@ -130,7 +130,7 @@
 
     <li class="menu-kasir">
       <a href="/tracking">
-        <i class="ti ti-clock-play"></i>
+        <i class="ti ti-receipt"></i>
         <span>Tracking</span>
       </a>
     </li>
