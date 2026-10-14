@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Login | PS Rental</title>
+    <title>Login | Best Play Gaming</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <link 
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" 
@@ -77,24 +78,42 @@
 </div>
 
 <script>
-    document.getElementById("loginForm").addEventListener("submit", function(e) {
+    document.getElementById("loginForm").addEventListener("submit", async function (e) {
         e.preventDefault();
 
-        const usernameInput = document.getElementById("username").value.trim();
-        const lowerUsername = usernameInput.toLowerCase();
+        const username = document.getElementById("username").value.trim();
+        const password = document.getElementById("password").value;
+        const tombol = this.querySelector("button[type=submit]");
+        tombol.disabled = true;
 
-        // Tentukan role otomatis berdasarkan username
-        let role = "kasir";
-        if (lowerUsername === "superadmin" || lowerUsername === "admin") {
-            role = "superadmin";
+        try {
+            const response = await fetch("/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({ username: username, password: password })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                alert(data.message || "Login gagal.");
+                tombol.disabled = false;
+                return;
+            }
+
+            // Halaman lain masih membaca role dan username dari localStorage
+            localStorage.setItem("role", data.role);
+            localStorage.setItem("username", data.username);
+
+            window.location.href = data.redirect;
+        } catch (err) {
+            alert("Tidak dapat terhubung ke server.");
+            tombol.disabled = false;
         }
-
-        // Simpan ke localStorage agar dibaca oleh dashboard
-        localStorage.setItem("role", role);
-        localStorage.setItem("username", usernameInput);
-
-        // Arahkan langsung ke dashboard
-        window.location.href = "/dashboard";
     });
 </script>
 
