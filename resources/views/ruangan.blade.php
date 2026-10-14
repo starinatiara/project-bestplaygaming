@@ -101,7 +101,7 @@
     <!-- SUPERADMIN -->
     <li class="menu-superadmin">
       <a href="/ruanganAdmin">
-        <i class="ti ti-device-gamepad-2"></i>
+        <i class="ti ti-device-gamepad"></i>
         <span>Ruangan</span>
       </a>
     </li>
@@ -123,7 +123,7 @@
 
     <li class="menu-kasir">
       <a href="/ruangan" class="active">
-        <i class="ti ti-device-gamepad-2"></i>
+        <i class="ti ti-device-gamepad"></i>
         <span>Ruangan</span>
       </a>
     </li>
