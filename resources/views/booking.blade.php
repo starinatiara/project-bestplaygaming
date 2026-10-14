@@ -142,6 +142,7 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      transition: margin-left 0.25s ease; /* DITAMBAHKAN */
     }
 
     .top-header {
@@ -209,6 +210,27 @@
       padding: 25px 35px;
       color: #6c757d;
       font-size: 14px;
+    }
+
+    /* ================= DITAMBAHKAN: SIDEBAR TOGGLE (DESKTOP) ================= */
+    body.sidebar-hidden .sidebar {
+      transform: translateX(-100%);
+    }
+
+    body.sidebar-hidden .main-content {
+      margin-left: 0;
+    }
+
+    .menu-toggle {
+      font-size: 26px;
+      padding: 6px 8px;
+      border-radius: 8px;
+      color: #495057;
+    }
+
+    .menu-toggle:hover {
+      background: #f1f5f9;
+      color: #3b82f6;
     }
 
     /* ================= RESPONSIVE ================= */
@@ -287,14 +309,14 @@
 
       <li>
         <a href="/ruangan">
-          <i class="ti ti-device-gamepad"></i>
+          <i class="ti ti-device-gamepad-2"></i>
           <span>Ruangan</span>
         </a>
       </li>
 
       <li>
         <a href="/tracking">
-          <i class="ti ti-receipt"></i>
+          <i class="ti ti-clock-play"></i>
           <span>Tracking</span>
         </a>
       </li>
@@ -326,8 +348,9 @@
     <!-- HEADER -->
     <header class="top-header">
 
+      <!-- DITAMBAHKAN: d-lg-none dihapus agar hamburger tampil di desktop -->
       <div>
-        <button type="button" class="menu-toggle d-lg-none" id="menuToggle" aria-label="Menu">
+        <button type="button" class="menu-toggle" id="menuToggle" aria-label="Toggle sidebar">
           <i class="ti ti-menu-2"></i>
         </button>
       </div>
@@ -669,13 +692,19 @@
 
   <!-- Script layout: toggle sidebar, tanggal & jam -->
   <script>
-    // Toggle sidebar di layar kecil
+    // DITAMBAHKAN: Toggle sidebar (desktop & mobile)
     const sidebar = document.getElementById("sidebar");
     const menuToggle = document.getElementById("menuToggle");
 
     if (menuToggle) {
       menuToggle.addEventListener("click", function () {
-        sidebar.classList.toggle("show");
+        if (window.innerWidth >= 992) {
+          // Desktop: sembunyikan / tampilkan sidebar
+          document.body.classList.toggle("sidebar-hidden");
+        } else {
+          // Mobile: buka / tutup sidebar
+          sidebar.classList.toggle("show");
+        }
       });
     }
 
