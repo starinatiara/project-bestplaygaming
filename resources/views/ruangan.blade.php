@@ -16,10 +16,10 @@
   <link rel="stylesheet" href="{{ asset('assets/fonts/inter/inter.css') }}">
 
   <style>
-    /*  GLOBAL */
+    /* ===== GLOBAL ===== */
     body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; color: #212529; }
 
-    /*  SIDEBAR */
+    /* ===== SIDEBAR (SAMA DENGAN DASHBOARD) ===== */
     .sidebar { width: 280px; min-height: 100vh; position: fixed; left: 0; top: 0; background: #ffffff; border-right: 1px solid #dee2e6; padding: 24px 16px; z-index: 1000; }
     .brand { font-size: 25px; font-weight: 700; color: #3b82f6; text-decoration: none; display: block; padding: 0 10px 25px; }
 
@@ -44,7 +44,7 @@
     .logout-box { margin-top: 15px; }
     .logout-btn { width: 100%; background: #ffffff; border: 1px solid #e5e7eb; color: #dc3545; padding: 14px; border-radius: 12px; text-align: left; }
 
-    /*  MAIN + HEADER (SAMA DENGAN DASHBOARD)  */
+    /* ===== MAIN + HEADER (SAMA DENGAN DASHBOARD) ===== */
     .main-content { margin-left: 280px; min-height: 100vh; }
     .top-header { height: 80px; background: #ffffff; border-bottom: 1px solid #dee2e6; display: flex; align-items: center; justify-content: space-between; padding: 0 35px; }
     .header-title { font-size: 20px; font-weight: 600; margin: 0; }
@@ -52,25 +52,35 @@
     .content { padding: 35px; }
     footer { padding: 25px 35px; color: #6c757d; font-size: 14px; }
 
-    /* KHUSUS HALAMAN RUANGAN */
+    /* ===== TOMBOL HAMBURGER + SIDEBAR COLLAPSE ===== */
+    .menu-toggle { border: 0; background: transparent; color: #495057; font-size: 24px; line-height: 1; padding: 6px 10px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+    .menu-toggle:hover { background: #f1f5f9; color: #3b82f6; }
+    .sidebar { transition: transform 0.25s ease; }
+    .main-content { transition: margin-left 0.25s ease; }
+    body.sidebar-collapsed .sidebar { transform: translateX(-100%); }
+    body.sidebar-collapsed .main-content { margin-left: 0; }
+
+    /* ===== KHUSUS HALAMAN RUANGAN ===== */
     .schedule-slot { height: 28px; border-radius: 5px; width: 100%; }
     .slot-empty { background: #dff4e7; }
     .slot-booking { background: #ffedc2; }
     .slot-used { background: #f6d5d9; }
     .room-name { font-weight: 600; margin-bottom: 6px; }
 
+    /* ===== RESPONSIVE ===== */
     @media (max-width: 991px) {
       .sidebar { position: relative; width: 100%; min-height: auto; }
       .main-content { margin-left: 0; }
       .top-header { padding: 0 20px; }
       .content { padding: 20px; }
+      body.sidebar-collapsed .sidebar { display: none; transform: none; }
     }
   </style>
 </head>
 
 <body>
 
-<!-- SIDEBAR  -->
+<!-- ===================== SIDEBAR ===================== -->
 <aside class="sidebar">
 
   <a href="/dashboard" class="brand">PS Rental</a>
@@ -166,21 +176,27 @@
 </aside>
 
 
-<!-- MAIN -->
+<!-- ===================== MAIN ===================== -->
 <main class="main-content">
 
   <!-- HEADER -->
   <header class="top-header">
-    <div>
+    <div class="d-flex align-items-center gap-2">
+      <button type="button" class="menu-toggle" id="menuToggle" aria-label="Toggle sidebar">
+        <i class="ti ti-menu-2"></i>
+      </button>
       <h5 class="header-title">Jadwal Ruangan</h5>
     </div>
 
-    <div class="header-date">
-      <i class="ti ti-calendar me-1"></i>
-      <span id="currentDate">-</span>
-      <span class="mx-2">|</span>
-      <i class="ti ti-clock me-1"></i>
-      <span id="currentTime">-</span>
+    <div class="header-date d-flex align-items-center gap-3">
+      <span>
+        <i class="ti ti-calendar me-1"></i>
+        <span id="currentDate">-</span>
+      </span>
+      <span>
+        <i class="ti ti-clock me-1"></i>
+        <span id="currentTime">-</span>
+      </span>
     </div>
   </header>
 
@@ -310,6 +326,7 @@
 
   </div>
 
+
 </main>
 
 
@@ -317,7 +334,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-  /*  CEK LOGIN  */
+  /* ===== CEK LOGIN ===== */
   const role = localStorage.getItem("role");
   const username = localStorage.getItem("username");
 
@@ -325,7 +342,7 @@
     window.location.href = "/login";
   }
 
-  /*  ROLE  */
+  /* ===== ROLE ===== */
   let roleName = "";
 
   if (role === "superadmin") {
@@ -338,13 +355,13 @@
     window.location.href = "/login";
   }
 
-  /*  ISI NAMA & ROLE DI SIDEBAR  */
+  /* ===== ISI NAMA & ROLE DI SIDEBAR ===== */
   document.getElementById("sidebarUsername").textContent = username;
   document.getElementById("sidebarRole").textContent = roleName;
   document.getElementById("bottomUsername").textContent = username;
   document.getElementById("bottomRole").textContent = roleName;
 
-  /*  MENU BERDASARKAN ROLE  */
+  /* ===== MENU BERDASARKAN ROLE ===== */
   document.querySelectorAll(".menu-kasir").forEach(function (menu) {
     menu.style.display = (role === "kasir") ? "" : "none";
   });
@@ -353,7 +370,7 @@
     menu.style.display = (role === "superadmin") ? "" : "none";
   });
 
-  /*  TANGGAL & JAM  */
+  /* ===== TANGGAL & JAM ===== */
   function updateDateTime() {
     const now = new Date();
 
@@ -373,7 +390,7 @@
   updateDateTime();
   setInterval(updateDateTime, 1000);
 
-  /*  LOGOUT  */
+  /* ===== LOGOUT ===== */
   function logout() {
     if (confirm("Apakah Anda yakin ingin keluar?")) {
       localStorage.removeItem("role");
@@ -381,6 +398,22 @@
       window.location.href = "/login";
     }
   }
+
+  /*  TOGGLE SIDEBAR (HAMBURGER)  */
+  const menuToggle = document.getElementById("menuToggle");
+
+  try {
+    if (localStorage.getItem("sidebarCollapsed") === "1") {
+      document.body.classList.add("sidebar-collapsed");
+    }
+  } catch (e) {}
+
+  menuToggle.addEventListener("click", function () {
+    const collapsed = document.body.classList.toggle("sidebar-collapsed");
+    try {
+      localStorage.setItem("sidebarCollapsed", collapsed ? "1" : "0");
+    } catch (e) {}
+  });
 </script>
 
 </body>
