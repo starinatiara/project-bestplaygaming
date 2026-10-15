@@ -872,6 +872,32 @@
   </ul>
 
 
+  <!-- PROFILE -->
+
+  <div class="sidebar-bottom">
+
+
+    <div class="profile-box">
+
+      <i class="ti ti-user"></i>
+
+
+      <h6 id="bottomUsername">
+
+        User
+
+      </h6>
+
+
+      <small id="bottomRole">
+
+        Role
+
+      </small>
+
+    </div>
+
+
     <!-- LOGOUT -->
 
     <div class="logout-box">
