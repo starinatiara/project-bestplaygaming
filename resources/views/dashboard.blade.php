@@ -670,6 +670,100 @@
 
     }
 
+
+    /* =====================================================
+       DITAMBAHKAN: HAMBURGER + SIDEBAR TOGGLE
+    ====================================================== */
+
+    .sidebar {
+
+      overflow-y: auto;
+
+      transition: transform 0.25s ease;
+
+    }
+
+
+    .main-content {
+
+      transition: margin-left 0.25s ease;
+
+    }
+
+
+    .menu-toggle {
+
+      border: none;
+
+      background: transparent;
+
+      font-size: 26px;
+
+      line-height: 1;
+
+      padding: 6px 8px;
+
+      border-radius: 8px;
+
+      color: #495057;
+
+      cursor: pointer;
+
+    }
+
+
+    .menu-toggle:hover {
+
+      background: #f1f5f9;
+
+      color: #3b82f6;
+
+    }
+
+
+    /* Desktop: sidebar disembunyikan */
+
+    body.sidebar-hidden .sidebar {
+
+      transform: translateX(-100%);
+
+    }
+
+
+    body.sidebar-hidden .main-content {
+
+      margin-left: 0;
+
+    }
+
+
+    /* Mobile / tablet: sidebar menjadi drawer */
+
+    @media (max-width: 991px) {
+
+      .sidebar {
+
+        position: fixed;
+
+        width: 280px;
+
+        min-height: 100vh;
+
+        transform: translateX(-100%);
+
+      }
+
+
+      .sidebar.show {
+
+        transform: translateX(0);
+
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.15);
+
+      }
+
+    }
+
   </style>
 
 </head>
@@ -682,7 +776,8 @@
      SIDEBAR
 ====================================================== -->
 
-<aside class="sidebar">
+<!-- DITAMBAHKAN: id="sidebar" -->
+<aside class="sidebar" id="sidebar">
 
 
   <!-- LOGO -->
@@ -937,7 +1032,19 @@
   <header class="top-header">
 
 
-    <div>
+    <!-- DITAMBAHKAN: tombol hamburger di sebelah judul -->
+    <div class="d-flex align-items-center gap-2">
+
+      <button
+        type="button"
+        class="menu-toggle"
+        id="menuToggle"
+        aria-label="Toggle sidebar">
+
+        <i class="ti ti-menu-2"></i>
+
+      </button>
+
 
       <h5 class="header-title">
 
@@ -1907,6 +2014,52 @@
         "/login";
 
     }
+
+  }
+
+
+  /* =====================================================
+     DITAMBAHKAN: TOGGLE SIDEBAR (HAMBURGER)
+  ====================================================== */
+
+  const sidebar =
+    document.getElementById(
+      "sidebar"
+    );
+
+
+  const menuToggle =
+    document.getElementById(
+      "menuToggle"
+    );
+
+
+  if (menuToggle) {
+
+    menuToggle.addEventListener(
+      "click",
+      function () {
+
+        if (window.innerWidth >= 992) {
+
+          // Desktop: sembunyikan / tampilkan sidebar
+          document.body.classList.toggle(
+            "sidebar-hidden"
+          );
+
+        }
+
+        else {
+
+          // Mobile: buka / tutup sidebar
+          sidebar.classList.toggle(
+            "show"
+          );
+
+        }
+
+      }
+    );
 
   }
 
