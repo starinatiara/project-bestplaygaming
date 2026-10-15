@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProfilController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/login');
@@ -15,3 +16,5 @@ Route::view('/laporan', 'laporan');
 Route::view('/tracking', 'tracking');
 Route::view('/user', 'user');
 Route::view('/profil', 'profil');
+Route::get('/profil/data', [ProfilController::class, 'show']);
+Route::put('/profil', [ProfilController::class, 'update']);
