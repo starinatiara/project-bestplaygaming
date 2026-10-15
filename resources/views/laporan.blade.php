@@ -133,7 +133,7 @@
       padding: 14px;
       border-radius: 12px;
       text-align: left;
-      font-weight: 600;
+      font-weight: 400;
     }
 
     /* ================= MAIN ================= */
@@ -278,7 +278,7 @@
     </div>
 
     <!-- MENU -->
-    <div class="menu-title">Menu Kasir</div>
+    <div class="menu-title">Menu</div>
 
     <ul class="sidebar-menu">
 
@@ -402,7 +402,7 @@
           <div class="card shadow-sm stat-card h-100">
             <div class="card-body d-flex align-items-center gap-3">
               <div class="stat-icon bg-warning-subtle text-warning">
-                <i class="ti ti-clock-hour-4"></i>
+                <i class="ti ti-clock"></i>
               </div>
               <div>
                 <div class="small text-muted fw-semibold">Total Jam Sewa</div>
