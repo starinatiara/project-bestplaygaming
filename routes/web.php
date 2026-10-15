@@ -13,6 +13,7 @@ Route::view('/booking', 'booking');
 Route::view('/ruangan', 'ruangan');
 Route::view('/ruanganAdmin', 'ruanganAdmin');
 Route::view('/laporan', 'laporan');
+Route::view('/superadmin/laporan', 'laporan_superadmin');
 Route::view('/tracking', 'tracking');
 Route::view('/user', 'user');
 Route::view('/profil', 'profil');

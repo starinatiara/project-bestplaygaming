@@ -7,6 +7,17 @@
 
   <title>Laporan Transaksi | PS Rental</title>
 
+  <script>
+    (function () {
+      var role = (localStorage.getItem("role") || "").toLowerCase();
+      var user = (localStorage.getItem("username") || "").toLowerCase();
+
+      if ((role.includes("admin") && !role.includes("kasir")) || user === "superadmin") {
+        window.location.replace("/superadmin/laporan");
+      }
+    })();
+  </script>
+
   <!-- BOOTSTRAP 5 -->
   <link
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
