@@ -14,3 +14,4 @@ Route::view('/ruanganAdmin', 'ruanganAdmin');
 Route::view('/laporan', 'laporan');
 Route::view('/tracking', 'tracking');
 Route::view('/user', 'user');
+Route::view('/profil', 'profil');

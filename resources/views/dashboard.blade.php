@@ -792,7 +792,7 @@
 
   <!-- USER CARD -->
 
-  <div class="user-card">
+  <div class="user-card" onclick="window.location.href='/profil'" style="cursor:pointer" title="Profil Saya">
 
     <div class="d-flex align-items-center">
 
