@@ -98,7 +98,7 @@
           <li class="pc-item active">
             <a href="/ruanganAdmin" class="pc-link">
               <span class="pc-micon">
-                <i class="ti ti-device-gamepad-2"></i>
+                <i class="ti ti-device-gamepad"></i>
               </span>
               <span class="pc-mtext">Ruangan</span>
             </a>
@@ -207,7 +207,7 @@
             <div class="card-body">
               <div class="d-flex align-items-center">
                 <div class="stat-icon bg-light-primary text-primary me-3">
-                  <i class="ti ti-device-gamepad-2"></i>
+                  <i class="ti ti-device-gamepad"></i>
                 </div>
                 <div>
                   <h6 class="text-muted mb-1 fs-6">Total Ruangan</h6>
