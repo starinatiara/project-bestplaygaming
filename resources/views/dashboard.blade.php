@@ -1045,13 +1045,6 @@
 
       </button>
 
-
-      <h5 class="header-title">
-
-        Dashboard
-
-      </h5>
-
     </div>
 
 
