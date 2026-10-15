@@ -133,7 +133,7 @@
       padding: 14px;
       border-radius: 12px;
       text-align: left;
-      font-weight: 600;
+      font-weight: 400;
     }
 
     /* ================= MAIN ================= */
@@ -289,7 +289,7 @@
     </div>
 
     <!-- MENU -->
-    <div class="menu-title">Menu Kasir</div>
+    <div class="menu-title">Menu</div>
 
     <ul class="sidebar-menu">
 
@@ -574,18 +574,6 @@
       </div>
 
     </div>
-
-    <!-- FOOTER -->
-    <footer>
-      <div class="row">
-        <div class="col-sm my-1">
-          <p class="m-0">PS Rental © 2026</p>
-        </div>
-        <div class="col-auto my-1">
-          <p class="m-0 text-muted">Sistem Informasi Rental PS (2 User)</p>
-        </div>
-      </div>
-    </footer>
 
   </main>
 

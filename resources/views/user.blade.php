@@ -61,7 +61,7 @@
       <div class="navbar-content">
 
         <!-- USER CARD -->
-        <div class="card pc-user-card">
+        <div class="card pc-user-card" onclick="window.location.href='/profil'" style="cursor:pointer" title="Profil Saya" >
           <div class="card-body">
             <div class="d-flex align-items-center">
               <div class="flex-shrink-0">

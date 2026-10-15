@@ -554,7 +554,7 @@
     <a href="/dashboard" class="brand">PS Rental</a>
 
     <!-- USER CARD -->
-    <div class="user-card" onclick="window.location.href='/profil'" style="cursor:pointer" title="Profil Saya" >
+    <div class="user-card" onclick="window.location.href='/profil'" style="cursor:pointer" title="Profil Saya">
       <div class="d-flex align-items-center">
         <img
           src="{{ asset('assets/images/user/avatar-1.jpg') }}"
@@ -612,12 +612,6 @@
 
     <!-- PROFILE + LOGOUT -->
     <div class="sidebar-bottom">
-
-      <div class="profile-box">
-        <i class="ti ti-user"></i>
-        <h6 id="bottomUsername">kasir</h6>
-        <small id="bottomRole">Kasir</small>
-      </div>
 
       <div class="logout-box">
         <button type="button" class="logout-btn" onclick="logout()">
