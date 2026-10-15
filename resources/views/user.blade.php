@@ -95,7 +95,7 @@
           <li class="pc-item">
             <a href="/ruanganAdmin" class="pc-link">
               <span class="pc-micon">
-                <i class="ti ti-device-gamepad-2"></i>
+                <i class="ti ti-device-gamepad"></i>
               </span>
               <span class="pc-mtext">Ruangan</span>
             </a>
@@ -401,22 +401,7 @@
       </div>
     </div>
   </div>
-
-  <!-- =========================================================
-       FOOTER
-  ========================================================== -->
-  <footer class="pc-footer">
-    <div class="footer-wrapper container-fluid">
-      <div class="row">
-        <div class="col-sm my-1">
-          <p class="m-0">PS Rental © 2026</p>
-        </div>
-        <div class="col-auto my-1">
-          <p class="m-0 text-muted">Sistem Informasi Rental PS (2 User)</p>
-        </div>
-      </div>
-    </div>
-  </footer>
+  
 
   <!-- =========================================================
        JAVASCRIPT
