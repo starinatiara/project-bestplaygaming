@@ -263,7 +263,7 @@
     <a href="/dashboard" class="brand">PS Rental</a>
 
     <!-- USER CARD -->
-    <div class="user-card" onclick="window.location.href='/profil'" style="cursor:pointer" title="Profil Saya" >
+    <div class="user-card" onclick="window.location.href='/profil'" style="cursor:pointer" title="Profil Saya">
       <div class="d-flex align-items-center">
         <img
           src="{{ asset('assets/images/user/avatar-1.jpg') }}"
@@ -489,7 +489,7 @@
               </tr>
             </thead>
             <tbody id="tabelLaporan">
-              <!-- Render dinamis via laporan.js -->
+              <!-- Diisi otomatis oleh script di bawah -->
             </tbody>
           </table>
         </div>
@@ -507,7 +507,101 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <!-- Script Logika Laporan -->
-  <script src="{{ asset('assets/js/pages/laporan.js') }}"></script>
+  <script>
+    // ================= DATA DUMMY =================
+    const dataLaporan = [
+      {
+        id: 1,
+        tanggal: "2026-10-08",
+        jam: "10:00",
+        pelanggan: "Rudi Hermawan",
+        telepon: "081234567890",
+        ruangan: "PS Room 1",
+        durasi: 2,
+        biayaSewa: 30000,
+        totalBayar: 30000,
+        status: "Lunas"
+      }
+    ];
+
+    // ================= HELPER =================
+    const rupiah = (angka) => "Rp " + Number(angka).toLocaleString("id-ID");
+
+    // ================= FILTER =================
+    function ambilDataTerfilter() {
+      const mulai = document.getElementById("filterTanggalMulai").value;
+      const akhir = document.getElementById("filterTanggalAkhir").value;
+      const ruangan = document.getElementById("filterRuangan").value;
+
+      return dataLaporan.filter((d) => {
+        const cocokMulai = !mulai || d.tanggal >= mulai;
+        const cocokAkhir = !akhir || d.tanggal <= akhir;
+        const cocokRuangan = ruangan === "all" || d.ruangan === ruangan;
+        return cocokMulai && cocokAkhir && cocokRuangan;
+      });
+    }
+
+    // ================= RENDER =================
+    function renderLaporan() {
+      const data = ambilDataTerfilter();
+      const tbody = document.getElementById("tabelLaporan");
+
+      if (data.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" class="text-center text-muted py-4">
+              Tidak ada transaksi pada filter yang dipilih.
+            </td>
+          </tr>`;
+      } else {
+        tbody.innerHTML = data.map((d, i) => `
+          <tr>
+            <td>${i + 1}</td>
+            <td>${d.tanggal} <span class="text-muted small">${d.jam}</span></td>
+            <td>
+              <div class="fw-semibold">${d.pelanggan}</div>
+              <div class="text-muted small">${d.telepon}</div>
+            </td>
+            <td><span class="badge bg-info-subtle text-info">${d.ruangan}</span></td>
+            <td>${d.durasi} Jam</td>
+            <td>${rupiah(d.biayaSewa)}</td>
+            <td class="fw-semibold text-primary">${rupiah(d.totalBayar)}</td>
+            <td><span class="badge bg-success-subtle text-success">${d.status}</span></td>
+          </tr>
+        `).join("");
+      }
+
+      // Kartu ringkasan
+      const totalPendapatan = data.reduce((sum, d) => sum + d.totalBayar, 0);
+      const totalJam = data.reduce((sum, d) => sum + d.durasi, 0);
+
+      document.getElementById("totalPendapatan").textContent = rupiah(totalPendapatan);
+      document.getElementById("totalTransaksi").textContent = data.length + " Transaksi";
+      document.getElementById("totalJam").textContent = totalJam + " Jam";
+      document.getElementById("badgeTotalData").textContent = "Menampilkan " + data.length + " Data";
+    }
+
+    function resetFilter() {
+      document.getElementById("filterTanggalMulai").value = "";
+      document.getElementById("filterTanggalAkhir").value = "";
+      document.getElementById("filterRuangan").value = "all";
+      renderLaporan();
+    }
+
+    // ================= INIT =================
+    document.addEventListener("DOMContentLoaded", function () {
+      // Nama user di sidebar (kalau tersimpan saat login)
+      const username = localStorage.getItem("username");
+      if (username) {
+        document.getElementById("sidebarUsername").textContent = username;
+      }
+
+      document.getElementById("btnTerapkan").addEventListener("click", renderLaporan);
+      document.getElementById("btnResetFilter").addEventListener("click", resetFilter);
+
+      renderLaporan();
+    });
+  </script>
 
   <!-- Script layout: toggle sidebar, tanggal & jam -->
   <script>
@@ -548,7 +642,7 @@
     updateDateTime();
     setInterval(updateDateTime, 1000);
 
-    // Logout (dipakai hanya jika belum didefinisikan di laporan.js)
+    // Logout (fallback)
     if (typeof window.logout !== "function") {
       window.logout = function () {
         if (confirm("Apakah Anda yakin ingin logout?")) {
