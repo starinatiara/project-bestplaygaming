@@ -229,7 +229,7 @@
             <div class="card-body">
               <div class="d-flex align-items-center">
                 <div class="stat-icon bg-light-warning text-warning me-3">
-                  <i class="ti ti-clock-hour-4"></i>
+                  <i class="ti ti-clock"></i>
                 </div>
                 <div>
                   <h6 class="text-muted mb-1 fs-6">Total Jam Sewa</h6>
