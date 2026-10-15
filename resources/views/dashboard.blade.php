@@ -307,6 +307,8 @@
 
       text-align: left;
 
+      font-weight: 400;
+
     }
 
 
@@ -972,27 +974,6 @@
   <div class="sidebar-bottom">
 
 
-    <div class="profile-box">
-
-      <i class="ti ti-user"></i>
-
-
-      <h6 id="bottomUsername">
-
-        User
-
-      </h6>
-
-
-      <small id="bottomRole">
-
-        Role
-
-      </small>
-
-    </div>
-
-
     <!-- LOGOUT -->
 
     <div class="logout-box">
@@ -1134,7 +1115,7 @@
 
             <div class="stat-icon icon-blue">
 
-              <i class="ti ti-device-gamepad-2"></i>
+              <i class="ti ti-device-gamepad"></i>
 
             </div>
 
@@ -1785,18 +1766,6 @@
     );
 
 
-  const bottomUsername =
-    document.getElementById(
-      "bottomUsername"
-    );
-
-
-  const bottomRole =
-    document.getElementById(
-      "bottomRole"
-    );
-
-
   const welcomeTitle =
     document.getElementById(
       "welcomeTitle"
@@ -1843,14 +1812,6 @@
 
 
   sidebarRole.textContent =
-    roleName;
-
-
-  bottomUsername.textContent =
-    username;
-
-
-  bottomRole.textContent =
     roleName;
 
 
