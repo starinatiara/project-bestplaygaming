@@ -106,7 +106,7 @@
   <a href="/dashboard" class="brand">PS Rental</a>
 
   <!-- USER CARD -->
-  <div class="user-card">
+  <div class="user-card" onclick="window.location.href='/profil'" style="cursor:pointer" title="Profil Saya" >
     <div class="d-flex align-items-center">
       <img src="{{ asset('assets/images/user/avatar-1.jpg') }}" class="user-avatar" alt="User">
       <div class="ms-3">
