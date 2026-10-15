@@ -78,7 +78,7 @@
         <!-- MENU -->
         <ul class="pc-navbar">
           <li class="pc-item pc-caption">
-            <label>Menu Superadmin</label>
+            <label>Menu</label>
           </li>
 
           <!-- Dashboard -->
@@ -401,7 +401,7 @@
       </div>
     </div>
   </div>
-  
+
 
   <!-- =========================================================
        JAVASCRIPT
