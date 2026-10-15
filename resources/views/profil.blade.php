@@ -577,7 +577,7 @@
 
       <a href="/ruanganAdmin">
 
-        <i class="ti ti-device-gamepad-2"></i>
+        <i class="ti ti-device-gamepad"></i>
 
         <span>
           Ruangan
