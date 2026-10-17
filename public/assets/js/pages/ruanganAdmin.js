@@ -243,7 +243,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
   // Halaman Superadmin: jika belum login, kembalikan ke login
   if (!role || !username) {
-    window.location.href ="/login";
+    window.location.href ="/logout";
     return;
   }
 
@@ -281,6 +281,6 @@ function logout() {
   if (confirm("Apakah Anda yakin ingin logout?")) {
     localStorage.removeItem("role");
     localStorage.removeItem("username");
-    window.location.href ="/login";
+    window.location.href ="/logout";
   }
 }

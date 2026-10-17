@@ -817,7 +817,7 @@
   const username = localStorage.getItem("username");
 
   if (!role || !username) {
-    window.location.href = "/login";
+    window.location.href = "/logout";
   }
 
   const roleName = role === "superadmin" ? "Superadmin" : "Kasir";
@@ -894,7 +894,7 @@
       if (response.status === 401) {
         localStorage.removeItem("role");
         localStorage.removeItem("username");
-        window.location.href = "/login";
+        window.location.href = "/logout";
         return;
       }
 
@@ -979,7 +979,7 @@
     if (confirm("Apakah Anda yakin ingin logout?")) {
       localStorage.removeItem("role");
       localStorage.removeItem("username");
-      window.location.href = "/login";
+      window.location.href = "/logout";
     }
   }
 

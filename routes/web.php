@@ -5,17 +5,23 @@ use App\Http\Controllers\ProfilController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/login');
-Route::view('/login', 'login');
+
+Route::get('/login', function () {
+    return session()->has('user') ? redirect('/dashboard') : view('login');
+});
 Route::post('/login', [AuthController::class, 'login']);
+Route::get('/logout', [AuthController::class, 'logout']);
 Route::view('/register', 'register');
-Route::view('/dashboard', 'dashboard');
-Route::view('/booking', 'booking');
-Route::view('/ruangan', 'ruangan');
-Route::view('/ruanganAdmin', 'ruanganAdmin');
-Route::view('/laporan', 'laporan');
-Route::view('/superadmin/laporan', 'laporan_superadmin');
-Route::view('/tracking', 'tracking');
-Route::view('/user', 'user');
-Route::view('/profil', 'profil');
-Route::get('/profil/data', [ProfilController::class, 'show']);
-Route::put('/profil', [ProfilController::class, 'update']);
+
+Route::middleware('cek.login')->group(function () {
+    Route::view('/dashboard', 'dashboard');
+    Route::view('/booking', 'booking');
+    Route::view('/ruangan', 'ruangan');
+    Route::view('/ruanganAdmin', 'ruanganAdmin');
+    Route::view('/laporan', 'laporan');
+    Route::view('/tracking', 'tracking');
+    Route::view('/user', 'user');
+    Route::view('/profil', 'profil');
+    Route::get('/profil/data', [ProfilController::class, 'show']);
+    Route::put('/profil', [ProfilController::class, 'update']);
+});

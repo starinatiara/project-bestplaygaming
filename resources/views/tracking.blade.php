@@ -834,7 +834,7 @@
       if (confirm("Apakah Anda yakin ingin logout?")) {
         localStorage.removeItem("role");
         localStorage.removeItem("username");
-        window.location.href = "/login";
+        window.location.href = "/logout";
       }
     }
   </script>

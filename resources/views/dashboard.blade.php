@@ -1745,7 +1745,7 @@
   if (!role || !username) {
 
     window.location.href =
-      "/login";
+      "/logout";
 
   }
 
@@ -1798,7 +1798,7 @@
     localStorage.removeItem("username");
 
     window.location.href =
-      "/login";
+      "/logout";
 
   }
 
@@ -1965,7 +1965,7 @@
 
 
       window.location.href =
-        "/login";
+        "/logout";
 
     }
 

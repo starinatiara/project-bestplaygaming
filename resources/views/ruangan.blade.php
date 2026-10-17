@@ -352,7 +352,7 @@
   const username = localStorage.getItem("username");
 
   if (!role || !username) {
-    window.location.href = "/login";
+    window.location.href = "/logout";
   }
 
   /* ===== ROLE ===== */
@@ -365,7 +365,7 @@
   } else {
     localStorage.removeItem("role");
     localStorage.removeItem("username");
-    window.location.href = "/login";
+    window.location.href = "/logout";
   }
 
   /* ===== ISI NAMA & ROLE DI SIDEBAR ===== */
@@ -406,7 +406,7 @@
     if (confirm("Apakah Anda yakin ingin keluar?")) {
       localStorage.removeItem("role");
       localStorage.removeItem("username");
-      window.location.href = "/login";
+      window.location.href = "/logout";
     }
   }
 
