@@ -273,8 +273,10 @@
     <!-- LOGO -->
     <a href="/dashboard" class="brand">PS Rental</a>
 
-    <!-- USER CARD -->
-    <div class="user-card" onclick="window.location.href='/profil'" style="cursor:pointer" title="Profil Saya">
+    <!-- USER CARD + LOGOUT (satu baris) -->
+    <div style="display: flex; gap: 10px; align-items: stretch; margin-bottom: 25px;">
+
+    <div class="user-card" onclick="window.location.href='/profil'" style="cursor:pointer; margin-bottom:0; flex:1; min-width:0;" title="Profil Saya">
       <div class="d-flex align-items-center">
         <img
           src="{{ asset('assets/images/user/avatar-1.jpg') }}"
@@ -286,6 +288,15 @@
           <div class="user-role" id="sidebarRole">Kasir</div>
         </div>
       </div>
+    </div>
+
+    <!-- LOGOUT (DI SAMPING USER CARD, ikon saja) -->
+    <div class="logout-box" style="margin: 0;">
+      <button type="button" class="logout-btn" onclick="logout()" title="Logout" aria-label="Logout" style="width: auto; height: 100%; padding: 0 16px; text-align: center;">
+        <i class="ti ti-logout fs-5"></i>
+      </button>
+    </div>
+
     </div>
 
     <!-- MENU -->
@@ -329,14 +340,6 @@
       </li>
 
     </ul>
-
-    <!-- LOGOUT -->
-    <div class="logout-box">
-      <button type="button" class="logout-btn" onclick="logout()">
-        <i class="ti ti-logout me-2"></i>
-        Logout
-      </button>
-    </div>
 
   </aside>
 
