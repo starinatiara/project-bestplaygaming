@@ -35,6 +35,57 @@
       justify-content: center;
       font-size: 24px;
     }
+
+    /* =====================================================
+       USER CARD + LOGOUT (disamakan dengan dashboard)
+    ====================================================== */
+
+    /* Lebar sidebar disamakan dengan dashboard (280px).
+       Hapus baris ini jika ingin memakai lebar bawaan template. */
+    :root {
+      --pc-sidebar-width: 280px;
+    }
+
+    .sidebar-user-row {
+      display: flex;
+      align-items: stretch;
+      gap: 10px;
+      margin: 0 15px 15px;
+    }
+
+    /* Timpa margin & shadow bawaan template */
+    .sidebar-user-row .pc-user-card {
+      flex: 1 1 auto;
+      min-width: 0;
+      margin: 0 !important;
+      box-shadow: none;
+      background: #f8f9fa;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+    }
+
+    .sidebar-user-row .pc-user-card .card-body {
+      padding: 16px;
+    }
+
+    .sidebar-logout-btn {
+      flex: 0 0 54px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      color: #dc3545;
+      font-size: 22px;
+      text-decoration: none;
+      transition: 0.2s;
+    }
+
+    .sidebar-logout-btn:hover {
+      background: #fde8e8;
+      color: #dc3545;
+    }
   </style>
 </head>
 
@@ -60,19 +111,32 @@
       <!-- SIDEBAR CONTENT -->
       <div class="navbar-content">
 
-        <!-- USER CARD -->
-        <div class="card pc-user-card" onclick="window.location.href='/profil'" style="cursor:pointer" title="Profil Saya" >
-          <div class="card-body">
-            <div class="d-flex align-items-center">
-              <div class="flex-shrink-0">
-                <img src="{{ asset('assets/images/user/avatar-1.jpg') }}" class="user-avtar wid-45 rounded-circle" alt="user">
-              </div>
-              <div class="flex-grow-1 ms-3">
-                <h6 class="mb-0" id="sidebarUsername">Superadmin</h6>
-                <small class="text-muted" id="sidebarRole">Superadmin</small>
+        <!-- USER CARD + LOGOUT -->
+        <div class="sidebar-user-row">
+
+          <!-- USER CARD -->
+          <div class="card pc-user-card" onclick="window.location.href='/profil'" style="cursor:pointer" title="Profil Saya">
+            <div class="card-body">
+              <div class="d-flex align-items-center">
+                <div class="flex-shrink-0">
+                  <img src="{{ asset('assets/images/user/avatar-1.jpg') }}" class="user-avtar wid-45 rounded-circle" alt="user">
+                </div>
+                <div class="flex-grow-1 ms-3">
+                  <h6 class="mb-0" id="sidebarUsername">Superadmin</h6>
+                  <small class="text-muted" id="sidebarRole">Superadmin</small>
+                </div>
               </div>
             </div>
           </div>
+
+          <!-- LOGOUT (ikon) -->
+          <a href="#"
+             class="sidebar-logout-btn"
+             title="Logout"
+             onclick="logout(); return false;">
+            <i class="ti ti-logout"></i>
+          </a>
+
         </div>
 
         <!-- MENU -->
@@ -121,16 +185,6 @@
             </a>
           </li>
         </ul>
-
-        <!-- LOGOUT -->
-        <div class="card mt-3">
-          <div class="card-body p-3">
-            <a href="#" class="d-flex align-items-center text-danger text-decoration-none" onclick="logout(); return false;">
-              <i class="ti ti-logout me-2 fs-5"></i>
-              <span class="fw-semibold">Logout</span>
-            </a>
-          </div>
-        </div>
 
       </div>
     </div>
