@@ -3,6 +3,7 @@
 
 <head>
   <title>Data User | PS Rental</title>
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -261,7 +262,7 @@
                 </div>
                 <div>
                   <h6 class="text-muted mb-1 fs-6">Total Akun</h6>
-                  <h4 class="mb-0 fw-bold" id="statTotalUser">4 Akun</h4>
+                  <h4 class="mb-0 fw-bold" id="statTotalUser">0 Akun</h4>
                 </div>
               </div>
             </div>
@@ -278,7 +279,7 @@
                 </div>
                 <div>
                   <h6 class="text-muted mb-1 fs-6">Superadmin</h6>
-                  <h4 class="mb-0 fw-bold" id="statTotalAdmin">1 Akun</h4>
+                  <h4 class="mb-0 fw-bold" id="statTotalAdmin">0 Akun</h4>
                 </div>
               </div>
             </div>
@@ -295,13 +296,12 @@
                 </div>
                 <div>
                   <h6 class="text-muted mb-1 fs-6">Staf Kasir</h6>
-                  <h4 class="mb-0 fw-bold" id="statTotalKasir">3 Akun</h4>
+                  <h4 class="mb-0 fw-bold" id="statTotalKasir">0 Akun</h4>
                 </div>
               </div>
             </div>
           </div>
         </div>
-
         <!-- User Aktif -->
         <div class="col-sm-6 col-xl-3 mb-3">
           <div class="card border-0 shadow-sm stat-box mb-0">
@@ -312,7 +312,7 @@
                 </div>
                 <div>
                   <h6 class="text-muted mb-1 fs-6">Status Aktif</h6>
-                  <h4 class="mb-0 fw-bold" id="statUserAktif">3 Aktif</h4>
+                  <h4 class="mb-0 fw-bold" id="statUserAktif">0 Aktif</h4>
                 </div>
               </div>
             </div>
@@ -325,7 +325,7 @@
         <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
           <h5 class="mb-0">Daftar Akun Pengguna</h5>
           <span class="badge bg-light-primary text-primary px-3 py-2" id="badgeTotalUser">
-            Menampilkan 4 User
+            Menampilkan 0 User
           </span>
         </div>
 
@@ -341,7 +341,7 @@
                   type="text"
                   id="searchUser"
                   class="form-control border-start-0"
-                  placeholder="Cari nama, username, atau nomor HP..."
+                  placeholder="Cari nama atau username..."
                   onkeyup="renderUserTable()">
               </div>
             </div>
@@ -367,7 +367,6 @@
                 <th>Username</th>
                 <th>Role / Akses</th>
                 <th>Status</th>
-                <th>Terakhir Login</th>
                 <th class="text-center" style="width: 100px;">Aksi</th>
               </tr>
             </thead>
@@ -399,34 +398,25 @@
           <input type="hidden" id="userEditId" value="">
 
           <div class="modal-body">
-            <div class="row g-3">
-              <!-- ID User -->
-              <div class="col-md-6">
-                <label class="form-label small fw-semibold text-secondary">ID Pengguna</label>
-                <input type="text" id="userId" class="form-control" required readonly>
-              </div>
 
+            <div id="userFormAlert" class="alert alert-danger d-none" role="alert"></div>
+
+            <div class="row g-3">
               <!-- Nama Lengkap -->
               <div class="col-md-6">
-                <label class="form-label small fw-semibold text-secondary">Nama Lengkap</label>
-                <input type="text" id="userName" class="form-control" placeholder="Contoh: Budi Santoso" required>
+                <label class="form-label small fw-semibold text-secondary" for="userName">Nama Lengkap</label>
+                <input type="text" id="userName" class="form-control" placeholder="Contoh: Budi Santoso" maxlength="50" required>
               </div>
 
               <!-- Username -->
               <div class="col-md-6">
-                <label class="form-label small fw-semibold text-secondary">Username Login</label>
-                <input type="text" id="userUsername" class="form-control" placeholder="Contoh: kasir_budi" required>
-              </div>
-
-              <!-- No HP -->
-              <div class="col-md-6">
-                <label class="form-label small fw-semibold text-secondary">No. Handphone / WA</label>
-                <input type="text" id="userPhone" class="form-control" placeholder="08xxxxxxxxxx">
+                <label class="form-label small fw-semibold text-secondary" for="userUsername">Username Login</label>
+                <input type="text" id="userUsername" class="form-control" placeholder="Contoh: kasir_budi" maxlength="50" required>
               </div>
 
               <!-- Role -->
               <div class="col-md-6">
-                <label class="form-label small fw-semibold text-secondary">Hak Akses (Role)</label>
+                <label class="form-label small fw-semibold text-secondary" for="userRole">Hak Akses (Role)</label>
                 <select id="userRole" class="form-select" required>
                   <option value="kasir">Kasir</option>
                   <option value="superadmin">Superadmin</option>
@@ -435,18 +425,26 @@
 
               <!-- Status -->
               <div class="col-md-6">
-                <label class="form-label small fw-semibold text-secondary">Status Akun</label>
+                <label class="form-label small fw-semibold text-secondary" for="userStatus">Status Akun</label>
                 <select id="userStatus" class="form-select" required>
                   <option value="Aktif">Aktif</option>
                   <option value="Nonaktif">Nonaktif</option>
                 </select>
+                <div class="form-text">Akun nonaktif tidak bisa login, tetapi datanya tetap tersimpan.</div>
+              </div>
+
+              <!-- Password -->
+              <div class="col-12">
+                <label class="form-label small fw-semibold text-secondary" for="userPassword">Password</label>
+                <input type="password" id="userPassword" class="form-control" placeholder="Minimal 6 karakter" autocomplete="new-password">
+                <div class="form-text" id="passwordHint">Wajib diisi untuk akun baru.</div>
               </div>
             </div>
           </div>
 
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-            <button type="submit" class="btn btn-primary">
+            <button type="submit" class="btn btn-primary" id="btnSimpanUser">
               <i class="ti ti-device-floppy me-1"></i> Simpan User
             </button>
           </div>

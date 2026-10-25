@@ -25,6 +25,13 @@ class AuthController extends Controller
             ], 422);
         }
 
+        // Akun nonaktif tidak boleh login (datanya tetap tersimpan)
+        if (($user->status ?? 'Aktif') !== 'Aktif') {
+            return response()->json([
+                'message' => 'Akun Anda nonaktif. Silakan hubungi superadmin.',
+            ], 403);
+        }
+
         $request->session()->regenerate();
         $request->session()->put('user', [
             'id'       => $user->id_user,

@@ -1,129 +1,171 @@
 /* =========================================================
    PS RENTAL - DATA USER MANAGEMENT JAVASCRIPT
+   Data diambil dan disimpan ke tabel ms_user lewat Laravel
 ========================================================== */
 
-const STORAGE_KEY_USERS = "ps_rental_users_data";
+const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 
-// Data awal user jika localStorage belum ada
-const initialUsers = [
-  {
-    id: "USR-001",
-    name: "Super Admin",
-    username: "superadmin",
-    role: "superadmin",
-    phone: "0812-9999-0001",
-    status: "Aktif",
-    lastLogin: "Hari ini, 10:45"
-  },
-  {
-    id: "USR-002",
-    name: "Rizal Pratama",
-    username: "kasir",
-    role: "kasir",
-    phone: "0812-3456-7890",
-    status: "Aktif",
-    lastLogin: "Kemarin, 21:00"
-  },
-  {
-    id: "USR-003",
-    name: "Siti Nurhaliza",
-    username: "kasir2",
-    role: "kasir",
-    phone: "0856-7890-1234",
-    status: "Aktif",
-    lastLogin: "06 Okt 2026, 17:30"
-  },
-  {
-    id: "USR-004",
-    name: "Bambang Wijaya",
-    username: "kasir3",
-    role: "kasir",
-    phone: "0878-1122-3344",
-    status: "Nonaktif",
-    lastLogin: "01 Okt 2026, 14:10"
-  }
-];
+let allUsers = [];
 
-function getUsers() {
-  const saved = localStorage.getItem(STORAGE_KEY_USERS);
-  if (saved) {
-    try {
-      return JSON.parse(saved);
-    } catch (e) {
-      return initialUsers;
+/* ---------------------------------------------------------
+   Helper
+--------------------------------------------------------- */
+
+// Kirim permintaan ke server (JSON)
+async function api(url, method, body) {
+  const options = {
+    method: method,
+    headers: {
+      "Accept": "application/json",
+      "X-CSRF-TOKEN": csrfToken
     }
+  };
+
+  if (body) {
+    options.headers["Content-Type"] = "application/json";
+    options.body = JSON.stringify(body);
   }
-  localStorage.setItem(STORAGE_KEY_USERS, JSON.stringify(initialUsers));
-  return initialUsers;
+
+  const response = await fetch(url, options);
+
+  let data = {};
+  try {
+    data = await response.json();
+  } catch (e) {
+    data = {};
+  }
+
+  if (response.status === 401) {
+    window.location.href = "/logout";
+  }
+
+  return { ok: response.ok, status: response.status, data: data };
 }
 
-function saveUsers(data) {
-  localStorage.setItem(STORAGE_KEY_USERS, JSON.stringify(data));
+// Ambil pesan error pertama dari respons server
+function pesanError(data) {
+  if (data && data.errors) {
+    return Object.values(data.errors)[0][0];
+  }
+  return (data && data.message) || "Terjadi kesalahan pada server.";
 }
 
-// Render Tabel User & Statistik
+// Cegah teks dari database dibaca sebagai HTML
+function esc(teks) {
+  const div = document.createElement("div");
+  div.textContent = teks == null ? "" : String(teks);
+  return div.innerHTML;
+}
+
+// 1 -> USR-001
+function formatId(id) {
+  return "USR-" + String(id).padStart(3, "0");
+}
+
+function tampilkanErrorForm(pesan) {
+  const box = document.getElementById("userFormAlert");
+  box.textContent = pesan;
+  box.classList.remove("d-none");
+}
+
+function sembunyikanErrorForm() {
+  const box = document.getElementById("userFormAlert");
+  box.textContent = "";
+  box.classList.add("d-none");
+}
+
+/* ---------------------------------------------------------
+   Ambil data dari database
+--------------------------------------------------------- */
+
+async function loadUsers() {
+  const tbody = document.getElementById("tabelUser");
+  tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-muted">Memuat data...</td></tr>';
+
+  try {
+    const res = await api("/user/data", "GET");
+
+    if (!res.ok) {
+      tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-danger">' +
+        esc(pesanError(res.data)) + '</td></tr>';
+      return;
+    }
+
+    allUsers = res.data;
+    renderUserTable();
+  } catch (e) {
+    tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-danger">' +
+      'Tidak dapat terhubung ke server.</td></tr>';
+  }
+}
+
+/* ---------------------------------------------------------
+   Render tabel dan statistik
+--------------------------------------------------------- */
+
 function renderUserTable() {
-  const users = getUsers();
   const searchInput = document.getElementById("searchUser");
   const filterRole = document.getElementById("filterRoleUser");
+  const tbody = document.getElementById("tabelUser");
 
   const query = searchInput ? searchInput.value.toLowerCase().trim() : "";
   const selectedRole = filterRole ? filterRole.value : "all";
+  const usernameLogin = localStorage.getItem("username");
+  const jumlahSuperadmin = allUsers.filter(function (u) { return u.role === "superadmin"; }).length;
 
-  const filtered = users.filter(function(u) {
-    const matchQuery = u.name.toLowerCase().includes(query) ||
+  const filtered = allUsers.filter(function (u) {
+    const cocokCari = u.nama.toLowerCase().includes(query) ||
       u.username.toLowerCase().includes(query) ||
-      u.id.toLowerCase().includes(query) ||
-      u.phone.toLowerCase().includes(query);
-    const matchRole = selectedRole === "all" || u.role === selectedRole;
-    return matchQuery && matchRole;
+      formatId(u.id_user).toLowerCase().includes(query);
+    const cocokRole = selectedRole === "all" || u.role === selectedRole;
+    return cocokCari && cocokRole;
   });
 
-  const tbody = document.getElementById("tabelUser");
-  if (!tbody) return;
   tbody.innerHTML = "";
 
   if (filtered.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-muted">' +
+    tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-muted">' +
       '<i class="ti ti-user-off fs-2 d-block mb-2"></i>' +
       'Tidak ada data pengguna yang sesuai.</td></tr>';
   } else {
-    filtered.forEach(function(u, index) {
+    filtered.forEach(function (u, index) {
       const isSuper = u.role === "superadmin";
       const badgeRoleClass = isSuper ? "bg-light-primary text-primary" : "bg-light-success text-success";
-      const badgeStatusClass = u.status === "Aktif" ? "bg-light-success text-success" : "bg-light-secondary text-muted";
+
+      const aktif = u.status === "Aktif";
+      const badgeStatusClass = aktif ? "bg-light-success text-success" : "bg-light-secondary text-muted";
+
+      // Akun yang sedang dipakai dan superadmin terakhir tidak boleh dihapus
+      const boleHapus = u.username !== usernameLogin && !(isSuper && jumlahSuperadmin <= 1);
 
       const tr = document.createElement("tr");
       tr.innerHTML = '<td>' + (index + 1) + '</td>' +
-        '<td><span class="badge bg-light-secondary text-dark fw-bold">' + u.id + '</span></td>' +
+        '<td><span class="badge bg-light-secondary text-dark fw-bold">' + formatId(u.id_user) + '</span></td>' +
         '<td>' +
         '<div class="d-flex align-items-center">' +
         '<div class="rounded-circle bg-light-primary text-primary d-flex align-items-center justify-content-center me-2 fw-bold" style="width: 36px; height: 36px; font-size: 14px;">' +
-        u.name.charAt(0) +
+        esc(u.nama.charAt(0).toUpperCase()) +
         '</div>' +
-        '<div><strong>' + u.name + '</strong><br><small class="text-muted">' + u.phone + '</small></div>' +
+        '<div><strong>' + esc(u.nama) + '</strong></div>' +
         '</div>' +
         '</td>' +
-        '<td><code>@' + u.username + '</code></td>' +
-        '<td><span class="badge ' + badgeRoleClass + '"><i class="ti ' + (isSuper ? 'ti-shield' : 'ti-cash') + ' me-1"></i>' + (isSuper ? 'Superadmin' : 'Kasir') + '</span></td>' +
-        '<td><span class="badge ' + badgeStatusClass + '">' + u.status + '</span></td>' +
-        '<td><small class="text-muted">' + u.lastLogin + '</small></td>' +
+        '<td><code>@' + esc(u.username) + '</code></td>' +
+        '<td><span class="badge ' + badgeRoleClass + '"><i class="ti ' + (isSuper ? "ti-shield" : "ti-cash") + ' me-1"></i>' + (isSuper ? "Superadmin" : "Kasir") + '</span></td>' +
+        '<td><span class="badge ' + badgeStatusClass + '">' + (aktif ? "Aktif" : "Nonaktif") + '</span></td>' +
         '<td class="text-center">' +
         '<div class="btn-group btn-group-sm">' +
-        '<button class="btn btn-outline-primary" title="Edit" onclick="editUser(\'' + u.id + '\')"><i class="ti ti-edit"></i></button>' +
-        (isSuper && users.filter(x => x.role === 'superadmin').length <= 1 ? '' :
-          '<button class="btn btn-outline-danger" title="Hapus" onclick="deleteUser(\'' + u.id + '\')"><i class="ti ti-trash"></i></button>') +
+        '<button class="btn btn-outline-primary" title="Edit" onclick="editUser(' + u.id_user + ')"><i class="ti ti-edit"></i></button>' +
+        (boleHapus
+          ? '<button class="btn btn-outline-danger" title="Hapus" onclick="deleteUser(' + u.id_user + ')"><i class="ti ti-trash"></i></button>'
+          : '') +
         '</div>' +
         '</td>';
       tbody.appendChild(tr);
     });
   }
 
-  // Update Statistik Cards
-  const totalUsers = users.length;
-  const adminCount = users.filter(u => u.role === "superadmin").length;
-  const kasirCount = users.filter(u => u.role === "kasir").length;
-  const activeCount = users.filter(u => u.status === "Aktif").length;
+  // Statistik
+  const totalKasir = allUsers.filter(function (u) { return u.role === "kasir"; }).length;
 
   const c1 = document.getElementById("statTotalUser");
   const c2 = document.getElementById("statTotalAdmin");
@@ -131,123 +173,158 @@ function renderUserTable() {
   const c4 = document.getElementById("statUserAktif");
   const badgeTotal = document.getElementById("badgeTotalUser");
 
-  if (c1) c1.textContent = totalUsers + " Akun";
-  if (c2) c2.textContent = adminCount + " Akun";
-  if (c3) c3.textContent = kasirCount + " Akun";
-  if (c4) c4.textContent = activeCount + " Aktif";
+  if (c1) c1.textContent = allUsers.length + " Akun";
+  if (c2) c2.textContent = jumlahSuperadmin + " Akun";
+  if (c3) c3.textContent = totalKasir + " Akun";
+  if (c4) c4.textContent = allUsers.filter(function (u) { return u.status === "Aktif"; }).length + " Aktif";
   if (badgeTotal) badgeTotal.textContent = "Menampilkan " + filtered.length + " User";
 }
 
-// Buka Modal Tambah User
+/* ---------------------------------------------------------
+   Modal tambah / edit
+--------------------------------------------------------- */
+
+function bukaModal() {
+  const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById("modalUser"));
+  modal.show();
+}
+
 function openAddUserModal() {
   document.getElementById("modalUserTitle").textContent = "Tambah Akun User Baru";
   document.getElementById("userForm").reset();
   document.getElementById("userEditId").value = "";
-
-  const users = getUsers();
-  const nextNum = (users.length + 1).toString().padStart(3, "0");
-  document.getElementById("userId").value = "USR-" + nextNum;
-
-  const modal = new bootstrap.Modal(document.getElementById("modalUser"));
-  modal.show();
+  document.getElementById("userRole").disabled = false;
+  document.getElementById("userStatus").value = "Aktif";
+  document.getElementById("userStatus").disabled = false;
+  document.getElementById("passwordHint").textContent = "Wajib diisi untuk akun baru.";
+  sembunyikanErrorForm();
+  bukaModal();
 }
 
-// Buka Modal Edit User
 function editUser(id) {
-  const users = getUsers();
-  const u = users.find(x => x.id === id);
+  const u = allUsers.find(function (x) { return Number(x.id_user) === Number(id); });
   if (!u) return;
 
   document.getElementById("modalUserTitle").textContent = "Edit Akun Pengguna";
-  document.getElementById("userEditId").value = u.id;
-  document.getElementById("userId").value = u.id;
-  document.getElementById("userName").value = u.name;
+  document.getElementById("userForm").reset();
+  document.getElementById("userEditId").value = u.id_user;
+  document.getElementById("userName").value = u.nama;
   document.getElementById("userUsername").value = u.username;
   document.getElementById("userRole").value = u.role;
-  document.getElementById("userPhone").value = u.phone;
-  document.getElementById("userStatus").value = u.status;
+  document.getElementById("userStatus").value = u.status || "Aktif";
+  document.getElementById("userPassword").value = "";
+  document.getElementById("passwordHint").textContent = "Kosongkan jika tidak ingin mengubah password.";
 
-  const modal = new bootstrap.Modal(document.getElementById("modalUser"));
-  modal.show();
+  // Role akun yang sedang dipakai tidak boleh diubah
+  const akunSendiri = (u.username === localStorage.getItem("username"));
+  document.getElementById("userRole").disabled = akunSendiri;
+  document.getElementById("userStatus").disabled = akunSendiri;
+
+  sembunyikanErrorForm();
+  bukaModal();
 }
 
-// Simpan Data User (Tambah / Update)
-function handleUserSubmit(e) {
+/* ---------------------------------------------------------
+   Simpan (tambah / ubah)
+--------------------------------------------------------- */
+
+async function handleUserSubmit(e) {
   e.preventDefault();
+  sembunyikanErrorForm();
 
   const editId = document.getElementById("userEditId").value.trim();
-  const id = document.getElementById("userId").value.trim();
-  const name = document.getElementById("userName").value.trim();
+  const nama = document.getElementById("userName").value.trim();
   const username = document.getElementById("userUsername").value.trim();
   const role = document.getElementById("userRole").value;
-  const phone = document.getElementById("userPhone").value.trim() || "-";
   const status = document.getElementById("userStatus").value;
+  const password = document.getElementById("userPassword").value;
 
-  let users = getUsers();
+  if (!editId && password === "") {
+    tampilkanErrorForm("Password wajib diisi untuk akun baru.");
+    return;
+  }
 
-  if (editId) {
-    // Mode Update
-    users = users.map(function(u) {
-      if (u.id === editId) {
-        return { ...u, name, username, role, phone, status };
-      }
-      return u;
-    });
-  } else {
-    // Cek apakah username sudah dipakai
-    const exists = users.some(u => u.username.toLowerCase() === username.toLowerCase());
-    if (exists) {
-      alert("Username @" + username + " sudah digunakan! Silakan gunakan username lain.");
+  const payload = { nama: nama, username: username, role: role, status: status };
+  if (password !== "") {
+    payload.password = password;
+  }
+
+  const tombol = document.getElementById("btnSimpanUser");
+  tombol.disabled = true;
+
+  try {
+    const url = editId ? "/user/" + editId : "/user";
+    const method = editId ? "PUT" : "POST";
+    const res = await api(url, method, payload);
+
+    if (!res.ok) {
+      tampilkanErrorForm(pesanError(res.data));
       return;
     }
 
-    // Mode Tambah
-    users.push({
-      id,
-      name,
-      username,
-      role,
-      phone,
-      status,
-      lastLogin: "Baru dibuat"
-    });
-  }
+    // Kalau yang diubah akun sendiri, perbarui nama pengguna di sidebar
+    const usernameLama = localStorage.getItem("username");
+    const akunLama = allUsers.find(function (x) { return Number(x.id_user) === Number(editId); });
+    if (editId && akunLama && akunLama.username === usernameLama) {
+      localStorage.setItem("username", username);
+      document.getElementById("sidebarUsername").textContent = username;
+    }
 
-  saveUsers(users);
-  renderUserTable();
+    const modalEl = document.getElementById("modalUser");
+    const modal = bootstrap.Modal.getInstance(modalEl);
+    if (modal) modal.hide();
 
-  const modalEl = document.getElementById("modalUser");
-  const modal = bootstrap.Modal.getInstance(modalEl);
-  if (modal) modal.hide();
-}
-
-// Hapus User
-function deleteUser(id) {
-  if (confirm("Apakah Anda yakin ingin menghapus akun " + id + "?")) {
-    let users = getUsers();
-    users = users.filter(u => u.id !== id);
-    saveUsers(users);
-    renderUserTable();
+    await loadUsers();
+  } catch (err) {
+    tampilkanErrorForm("Tidak dapat terhubung ke server.");
+  } finally {
+    tombol.disabled = false;
   }
 }
 
-// Auth & Real-Time Clock
-document.addEventListener("DOMContentLoaded", function() {
+/* ---------------------------------------------------------
+   Hapus
+--------------------------------------------------------- */
+
+async function deleteUser(id) {
+  const u = allUsers.find(function (x) { return Number(x.id_user) === Number(id); });
+  if (!u) return;
+
+  if (!confirm("Hapus akun " + u.username + "?\n\nAkun yang sudah punya data booking tidak bisa dihapus. Untuk kasir yang sudah tidak bekerja, sebaiknya ubah statusnya menjadi Nonaktif.")) {
+    return;
+  }
+
+  try {
+    const res = await api("/user/" + id, "DELETE");
+
+    if (!res.ok) {
+      alert(pesanError(res.data));
+      return;
+    }
+
+    await loadUsers();
+  } catch (err) {
+    alert("Tidak dapat terhubung ke server.");
+  }
+}
+
+/* ---------------------------------------------------------
+   Auth & jam real-time
+--------------------------------------------------------- */
+
+document.addEventListener("DOMContentLoaded", function () {
   const role = localStorage.getItem("role");
   const username = localStorage.getItem("username");
 
   if (!role || !username) {
-    window.location.href ="/logout";
+    window.location.href = "/logout";
     return;
   }
 
-  const displayUsername = username || "Superadmin";
-  const displayRole = role === "superadmin" ? "Superadmin" : "Kasir";
-
   const sbUser = document.getElementById("sidebarUsername");
   const sbRole = document.getElementById("sidebarRole");
-  if (sbUser) sbUser.textContent = displayUsername;
-  if (sbRole) sbRole.textContent = displayRole;
+  if (sbUser) sbUser.textContent = username;
+  if (sbRole) sbRole.textContent = role === "superadmin" ? "Superadmin" : "Kasir";
 
   function updateDateTime() {
     const now = new Date();
@@ -266,13 +343,13 @@ document.addEventListener("DOMContentLoaded", function() {
   const form = document.getElementById("userForm");
   if (form) form.addEventListener("submit", handleUserSubmit);
 
-  renderUserTable();
+  loadUsers();
 });
 
 function logout() {
   if (confirm("Apakah Anda yakin ingin logout?")) {
     localStorage.removeItem("role");
     localStorage.removeItem("username");
-    window.location.href ="/logout";
+    window.location.href = "/logout";
   }
 }

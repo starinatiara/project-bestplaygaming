@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfilController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/login');
@@ -20,8 +21,16 @@ Route::middleware('cek.login')->group(function () {
     Route::view('/ruanganAdmin', 'ruanganAdmin');
     Route::view('/laporan', 'laporan');
     Route::view('/tracking', 'tracking');
-    Route::view('/user', 'user');
     Route::view('/profil', 'profil');
     Route::get('/profil/data', [ProfilController::class, 'show']);
     Route::put('/profil', [ProfilController::class, 'update']);
+
+    // Khusus superadmin
+    Route::middleware('cek.role:superadmin')->group(function () {
+        Route::view('/user', 'user');
+        Route::get('/user/data', [UserController::class, 'index']);
+        Route::post('/user', [UserController::class, 'store']);
+        Route::put('/user/{id}', [UserController::class, 'update']);
+        Route::delete('/user/{id}', [UserController::class, 'destroy']);
+    });
 });
