@@ -1,145 +1,167 @@
 /* =========================================================
    PS RENTAL - MANAJEMEN RUANGAN ADMIN JAVASCRIPT
+   Data diambil dan disimpan ke tabel ms_ruangan lewat Laravel
 ========================================================== */
 
-const STORAGE_KEY_ROOMS = "ps_rental_rooms_data";
+const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 
-// Data default ruangan awal jika localStorage belum ada
-const initialRooms = [
-  {
-    id: "ROOM-01",
-    name: "PS Room 1",
-    type: "PlayStation 5",
-    consoleDetail: "PS5 Disc Edition",
-    price: 20000,
-    desc: "TV 43\" 4K UHD, 2 Stick DualSense, AC, Sofa L-Shape",
-    status: "Digunakan"
-  },
-  {
-    id: "ROOM-02",
-    name: "PS Room 2",
-    type: "PlayStation 5",
-    consoleDetail: "PS5 Digital Edition",
-    price: 20000,
-    desc: "TV 43\" 4K UHD, 2 Stick DualSense, AC, Sofa 2 Seater",
-    status: "Tersedia"
-  },
-  {
-    id: "ROOM-03",
-    name: "PS Room 3",
-    type: "PlayStation 4",
-    consoleDetail: "PS4 Pro 1TB",
-    price: 15000,
-    desc: "TV 40\" FHD, 2 Stick DualShock 4, AC, Sofa Bed",
-    status: "Tersedia"
-  },
-  {
-    id: "ROOM-04",
-    name: "PS Room 4",
-    type: "PlayStation 4",
-    consoleDetail: "PS4 Slim 500GB",
-    price: 15000,
-    desc: "TV 40\" FHD, 2 Stick DualShock 4, AC, Sofa Minimalis",
-    status: "Tersedia"
-  },
-  {
-    id: "ROOM-05",
-    name: "VIP Room 1",
-    type: "PlayStation 5",
-    consoleDetail: "PS5 Disc Edition (Private)",
-    price: 30000,
-    desc: "Ruangan Privat Kedap Suara, Smart TV 55\" 4K, 4 Stick DualSense, AC, Recliner Sofa, Soundbar Dolby",
-    status: "Digunakan"
-  },
-  {
-    id: "ROOM-06",
-    name: "VIP Room 2",
-    type: "PlayStation 5",
-    consoleDetail: "PS5 Disc Edition (Private)",
-    price: 30000,
-    desc: "Ruangan Privat Kedap Suara, Smart TV 55\" 4K, 4 Stick DualSense, AC, Beanbags, Soundbar",
-    status: "Maintenance"
-  }
-];
+let allRooms = [];
 
-// Ambil data dari localStorage atau inisialisasi awal
-function getRooms() {
-  const saved = localStorage.getItem(STORAGE_KEY_ROOMS);
-  if (saved) {
-    try {
-      return JSON.parse(saved);
-    } catch (e) {
-      return initialRooms;
+/* ---------------------------------------------------------
+   Helper
+--------------------------------------------------------- */
+
+// Kirim permintaan ke server (JSON)
+async function api(url, method, body) {
+  const options = {
+    method: method,
+    headers: {
+      "Accept": "application/json",
+      "X-CSRF-TOKEN": csrfToken
     }
+  };
+
+  if (body) {
+    options.headers["Content-Type"] = "application/json";
+    options.body = JSON.stringify(body);
   }
-  localStorage.setItem(STORAGE_KEY_ROOMS, JSON.stringify(initialRooms));
-  return initialRooms;
+
+  const response = await fetch(url, options);
+
+  let data = {};
+  try {
+    data = await response.json();
+  } catch (e) {
+    data = {};
+  }
+
+  if (response.status === 401) {
+    window.location.href = "/logout";
+  }
+
+  return { ok: response.ok, status: response.status, data: data };
 }
 
-function saveRooms(data) {
-  localStorage.setItem(STORAGE_KEY_ROOMS, JSON.stringify(data));
+// Ambil pesan error pertama dari respons server
+function pesanError(data) {
+  if (data && data.errors) {
+    return Object.values(data.errors)[0][0];
+  }
+  return (data && data.message) || "Terjadi kesalahan pada server.";
+}
+
+// Cegah teks dari database dibaca sebagai HTML
+function esc(teks) {
+  const div = document.createElement("div");
+  div.textContent = teks == null ? "" : String(teks);
+  return div.innerHTML;
 }
 
 function formatRupiah(num) {
   return "Rp " + Number(num).toLocaleString("id-ID");
 }
 
-// Render Tabel & Kartu Statistik
+// 1 -> ROOM-01
+function formatKode(id) {
+  return "ROOM-" + String(id).padStart(2, "0");
+}
+
+// PS5 -> PlayStation 5
+function namaJenis(jenis) {
+  return jenis === "PS5" ? "PlayStation 5" : "PlayStation 4";
+}
+
+function tampilkanErrorForm(pesan) {
+  const box = document.getElementById("roomFormAlert");
+  box.textContent = pesan;
+  box.classList.remove("d-none");
+}
+
+function sembunyikanErrorForm() {
+  const box = document.getElementById("roomFormAlert");
+  box.textContent = "";
+  box.classList.add("d-none");
+}
+
+/* ---------------------------------------------------------
+   Ambil data dari database
+--------------------------------------------------------- */
+
+async function loadRooms() {
+  const tbody = document.getElementById("tabelRuangan");
+  tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-muted">Memuat data...</td></tr>';
+
+  try {
+    const res = await api("/ruangan/data", "GET");
+
+    if (!res.ok) {
+      tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-danger">' +
+        esc(pesanError(res.data)) + '</td></tr>';
+      return;
+    }
+
+    allRooms = res.data;
+    renderRoomsTable();
+  } catch (e) {
+    tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-danger">' +
+      'Tidak dapat terhubung ke server.</td></tr>';
+  }
+}
+
+/* ---------------------------------------------------------
+   Render tabel dan statistik
+--------------------------------------------------------- */
+
 function renderRoomsTable() {
-  const rooms = getRooms();
   const searchInput = document.getElementById("searchRuangan");
   const filterType = document.getElementById("filterTypeRuangan");
+  const tbody = document.getElementById("tabelRuangan");
 
   const query = searchInput ? searchInput.value.toLowerCase().trim() : "";
   const selectedType = filterType ? filterType.value : "all";
 
-  const filtered = rooms.filter(function(room) {
-    const matchQuery = room.name.toLowerCase().includes(query) ||
-      room.id.toLowerCase().includes(query) ||
-      room.type.toLowerCase().includes(query) ||
-      room.desc.toLowerCase().includes(query);
-    const matchType = selectedType === "all" || room.type === selectedType;
-    return matchQuery && matchType;
+  const filtered = allRooms.filter(function (r) {
+    const cocokCari = r.nama_ruangan.toLowerCase().includes(query) ||
+      formatKode(r.id_ruangan).toLowerCase().includes(query) ||
+      namaJenis(r.jenis_ruangan).toLowerCase().includes(query);
+    const cocokJenis = selectedType === "all" || r.jenis_ruangan === selectedType;
+    return cocokCari && cocokJenis;
   });
 
-  const tbody = document.getElementById("tabelRuangan");
-  if (!tbody) return;
   tbody.innerHTML = "";
 
   if (filtered.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-muted">' +
+    tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-muted">' +
       '<i class="ti ti-device-gamepad-off fs-2 d-block mb-2"></i>' +
       'Tidak ada data ruangan yang cocok.</td></tr>';
   } else {
-    filtered.forEach(function(r, index) {
+    filtered.forEach(function (r, index) {
       let badgeStatusClass = "bg-light-success text-success";
-      if (r.status === "Digunakan") badgeStatusClass = "bg-light-danger text-danger";
-      if (r.status === "Maintenance") badgeStatusClass = "bg-light-warning text-warning";
+      if (r.status_ruangan === "Digunakan") badgeStatusClass = "bg-light-danger text-danger";
+      if (r.status_ruangan === "Maintenance") badgeStatusClass = "bg-light-warning text-warning";
 
-      let badgeTypeClass = r.type.includes("5") ? "bg-light-primary text-primary" : "bg-light-info text-info";
+      const badgeTypeClass = r.jenis_ruangan === "PS5" ? "bg-light-primary text-primary" : "bg-light-info text-info";
 
       const tr = document.createElement("tr");
       tr.innerHTML = '<td>' + (index + 1) + '</td>' +
-        '<td><span class="badge bg-light-secondary text-dark fw-bold">' + r.id + '</span></td>' +
-        '<td><strong>' + r.name + '</strong><br><small class="text-muted">' + r.consoleDetail + '</small></td>' +
-        '<td><span class="badge ' + badgeTypeClass + '">' + r.type + '</span></td>' +
-        '<td><strong class="text-primary">' + formatRupiah(r.price) + '</strong> <small class="text-muted">/ jam</small></td>' +
-        '<td style="max-width: 250px;"><small class="text-secondary">' + r.desc + '</small></td>' +
-        '<td><span class="badge ' + badgeStatusClass + '">' + r.status + '</span></td>' +
+        '<td><span class="badge bg-light-secondary text-dark fw-bold">' + formatKode(r.id_ruangan) + '</span></td>' +
+        '<td><strong>' + esc(r.nama_ruangan) + '</strong></td>' +
+        '<td><span class="badge ' + badgeTypeClass + '">' + namaJenis(r.jenis_ruangan) + '</span></td>' +
+        '<td><strong class="text-primary">' + formatRupiah(r.tarif_per_jam) + '</strong> <small class="text-muted">/ jam</small></td>' +
+        '<td><span class="badge ' + badgeStatusClass + '">' + esc(r.status_ruangan) + '</span></td>' +
         '<td class="text-center">' +
         '<div class="btn-group btn-group-sm">' +
-        '<button class="btn btn-outline-primary" title="Edit" onclick="editRoom(\'' + r.id + '\')"><i class="ti ti-edit"></i></button>' +
-        '<button class="btn btn-outline-danger" title="Hapus" onclick="deleteRoom(\'' + r.id + '\')"><i class="ti ti-trash"></i></button>' +
+        '<button class="btn btn-outline-primary" title="Edit" onclick="editRoom(' + r.id_ruangan + ')"><i class="ti ti-edit"></i></button>' +
+        '<button class="btn btn-outline-danger" title="Hapus" onclick="deleteRoom(' + r.id_ruangan + ')"><i class="ti ti-trash"></i></button>' +
         '</div></td>';
       tbody.appendChild(tr);
     });
   }
 
-  // Update Statistik Cards
-  const totalRooms = rooms.length;
-  const ps5Count = rooms.filter(r => r.type.includes("5")).length;
-  const ps4Count = rooms.filter(r => r.type.includes("4")).length;
-  const activeCount = rooms.filter(r => r.status === "Digunakan").length;
+  // Statistik
+  const ps5 = allRooms.filter(function (r) { return r.jenis_ruangan === "PS5"; }).length;
+  const ps4 = allRooms.filter(function (r) { return r.jenis_ruangan === "PS4"; }).length;
+  const dipakai = allRooms.filter(function (r) { return r.status_ruangan === "Digunakan"; }).length;
 
   const c1 = document.getElementById("statTotalRuangan");
   const c2 = document.getElementById("statPS5");
@@ -147,113 +169,150 @@ function renderRoomsTable() {
   const c4 = document.getElementById("statRuanganAktif");
   const badgeTotal = document.getElementById("badgeTotalRuangan");
 
-  if (c1) c1.textContent = totalRooms + " Unit";
-  if (c2) c2.textContent = ps5Count + " Unit";
-  if (c3) c3.textContent = ps4Count + " Unit";
-  if (c4) c4.textContent = activeCount + " Ruangan";
+  if (c1) c1.textContent = allRooms.length + " Unit";
+  if (c2) c2.textContent = ps5 + " Unit";
+  if (c3) c3.textContent = ps4 + " Unit";
+  if (c4) c4.textContent = dipakai + " Ruangan";
   if (badgeTotal) badgeTotal.textContent = "Menampilkan " + filtered.length + " Ruangan";
 }
 
-// Buka Modal Tambah Ruangan
+/* ---------------------------------------------------------
+   Modal tambah / edit
+--------------------------------------------------------- */
+
+function bukaModal() {
+  const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById("modalRuangan"));
+  modal.show();
+}
+
 function openAddRoomModal() {
   document.getElementById("modalRoomTitle").textContent = "Tambah Ruangan Baru";
   document.getElementById("roomForm").reset();
   document.getElementById("roomEditId").value = "";
-
-  // Otomatis generate kode ruangan berikutnya
-  const rooms = getRooms();
-  const nextNum = (rooms.length + 1).toString().padStart(2, "0");
-  document.getElementById("roomId").value = "ROOM-" + nextNum;
-
-  const modal = new bootstrap.Modal(document.getElementById("modalRuangan"));
-  modal.show();
+  document.getElementById("roomId").value = "";
+  sembunyikanErrorForm();
+  bukaModal();
 }
 
-// Buka Modal Edit Ruangan
 function editRoom(id) {
-  const rooms = getRooms();
-  const room = rooms.find(r => r.id === id);
-  if (!room) return;
+  const r = allRooms.find(function (x) { return Number(x.id_ruangan) === Number(id); });
+  if (!r) return;
 
   document.getElementById("modalRoomTitle").textContent = "Edit Data Ruangan";
-  document.getElementById("roomEditId").value = room.id;
-  document.getElementById("roomId").value = room.id;
-  document.getElementById("roomName").value = room.name;
-  document.getElementById("roomType").value = room.type;
-  document.getElementById("roomConsoleDetail").value = room.consoleDetail;
-  document.getElementById("roomPrice").value = room.price;
-  document.getElementById("roomStatus").value = room.status;
-  document.getElementById("roomDesc").value = room.desc;
+  document.getElementById("roomForm").reset();
+  document.getElementById("roomEditId").value = r.id_ruangan;
+  document.getElementById("roomId").value = formatKode(r.id_ruangan);
+  document.getElementById("roomName").value = r.nama_ruangan;
+  document.getElementById("roomType").value = r.jenis_ruangan;
+  document.getElementById("roomPrice").value = r.tarif_per_jam;
+  document.getElementById("roomStatus").value = r.status_ruangan;
 
-  const modal = new bootstrap.Modal(document.getElementById("modalRuangan"));
-  modal.show();
+  sembunyikanErrorForm();
+  bukaModal();
 }
 
-// Simpan Data Ruangan (Tambah / Update)
-function handleRoomSubmit(e) {
+/* ---------------------------------------------------------
+   Simpan (tambah / ubah)
+--------------------------------------------------------- */
+
+async function handleRoomSubmit(e) {
   e.preventDefault();
+  sembunyikanErrorForm();
 
   const editId = document.getElementById("roomEditId").value.trim();
-  const id = document.getElementById("roomId").value.trim();
-  const name = document.getElementById("roomName").value.trim();
-  const type = document.getElementById("roomType").value;
-  const consoleDetail = document.getElementById("roomConsoleDetail").value.trim();
-  const price = parseInt(document.getElementById("roomPrice").value, 10) || 15000;
-  const status = document.getElementById("roomStatus").value;
-  const desc = document.getElementById("roomDesc").value.trim();
 
-  let rooms = getRooms();
+  const payload = {
+    nama_ruangan: document.getElementById("roomName").value.trim(),
+    jenis_ruangan: document.getElementById("roomType").value,
+    tarif_per_jam: parseInt(document.getElementById("roomPrice").value, 10),
+    status_ruangan: document.getElementById("roomStatus").value
+  };
 
-  if (editId) {
-    // Mode Update
-    rooms = rooms.map(function(r) {
-      if (r.id === editId) {
-        return { id: editId, name, type, consoleDetail, price, desc, status };
-      }
-      return r;
-    });
-  } else {
-    // Mode Tambah
-    rooms.push({ id, name, type, consoleDetail, price, desc, status });
+  const tombol = document.getElementById("btnSimpanRoom");
+  tombol.disabled = true;
+
+  try {
+    const url = editId ? "/ruangan/" + editId : "/ruangan";
+    const method = editId ? "PUT" : "POST";
+    const res = await api(url, method, payload);
+
+    if (!res.ok) {
+      tampilkanErrorForm(pesanError(res.data));
+      return;
+    }
+
+    const modal = bootstrap.Modal.getInstance(document.getElementById("modalRuangan"));
+    if (modal) modal.hide();
+
+    await loadRooms();
+  } catch (err) {
+    tampilkanErrorForm("Tidak dapat terhubung ke server.");
+  } finally {
+    tombol.disabled = false;
   }
-
-  saveRooms(rooms);
-  renderRoomsTable();
-
-  // Tutup Modal
-  const modalEl = document.getElementById("modalRuangan");
-  const modal = bootstrap.Modal.getInstance(modalEl);
-  if (modal) modal.hide();
 }
 
-// Hapus Ruangan
+/* ---------------------------------------------------------
+   Hapus
+--------------------------------------------------------- */
+
+async function hapusRoom(id) {
+  try {
+    const res = await api("/ruangan/" + id, "DELETE");
+
+    if (!res.ok) {
+      alert(pesanError(res.data));
+      return;
+    }
+
+    await loadRooms();
+  } catch (err) {
+    alert("Tidak dapat terhubung ke server.");
+  }
+}
+
 function deleteRoom(id) {
-  if (confirm("Apakah Anda yakin ingin menghapus ruangan " + id + "?")) {
-    let rooms = getRooms();
-    rooms = rooms.filter(r => r.id !== id);
-    saveRooms(rooms);
-    renderRoomsTable();
-  }
-}
+  const r = allRooms.find(function (x) { return Number(x.id_ruangan) === Number(id); });
+  if (!r) return;
 
-// Auth & Real-Time Clock
-document.addEventListener("DOMContentLoaded", function() {
-  const role = localStorage.getItem("role");
-  const username = localStorage.getItem("username");
+  const pesan = "Apakah Anda yakin ingin menghapus ruangan " + r.nama_ruangan + "?";
 
-  // Halaman Superadmin: jika belum login, kembalikan ke login
-  if (!role || !username) {
-    window.location.href ="/logout";
+  // Memakai pop up bersama (logout-modal.js) kalau tersedia
+  if (window.tampilKonfirmasi) {
+    window.tampilKonfirmasi({
+      judul: "Hapus Ruangan",
+      pesan: pesan,
+      teksYa: "Ya, Hapus",
+      teksTidak: "Tidak",
+      ikon: "ti-trash",
+      tipe: "danger",
+      onYa: function () { hapusRoom(id); }
+    });
     return;
   }
 
-  const displayUsername = username || "Superadmin";
-  const displayRole = role === "superadmin" ? "Superadmin" : "Kasir";
+  if (confirm(pesan)) {
+    hapusRoom(id);
+  }
+}
+
+/* ---------------------------------------------------------
+   Auth & jam real-time
+--------------------------------------------------------- */
+
+document.addEventListener("DOMContentLoaded", function () {
+  const role = localStorage.getItem("role");
+  const username = localStorage.getItem("username");
+
+  if (!role || !username) {
+    window.location.href = "/logout";
+    return;
+  }
 
   const sbUser = document.getElementById("sidebarUsername");
   const sbRole = document.getElementById("sidebarRole");
-  if (sbUser) sbUser.textContent = displayUsername;
-  if (sbRole) sbRole.textContent = displayRole;
+  if (sbUser) sbUser.textContent = username;
+  if (sbRole) sbRole.textContent = role === "superadmin" ? "Superadmin" : "Kasir";
 
   function updateDateTime() {
     const now = new Date();
@@ -269,18 +328,16 @@ document.addEventListener("DOMContentLoaded", function() {
   updateDateTime();
   setInterval(updateDateTime, 1000);
 
-  // Form submit listener
   const form = document.getElementById("roomForm");
   if (form) form.addEventListener("submit", handleRoomSubmit);
 
-  // Render tabel awal
-  renderRoomsTable();
+  loadRooms();
 });
 
 function logout() {
   if (confirm("Apakah Anda yakin ingin logout?")) {
     localStorage.removeItem("role");
     localStorage.removeItem("username");
-    window.location.href ="/logout";
+    window.location.href = "/logout";
   }
 }

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfilController;
+use App\Http\Controllers\RuanganController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -18,12 +19,13 @@ Route::middleware('cek.login')->group(function () {
     Route::view('/dashboard', 'dashboard');
     Route::view('/booking', 'booking');
     Route::view('/ruangan', 'ruangan');
-    Route::view('/ruanganAdmin', 'ruanganAdmin');
     Route::view('/laporan', 'laporan');
     Route::view('/tracking', 'tracking');
     Route::view('/profil', 'profil');
     Route::get('/profil/data', [ProfilController::class, 'show']);
     Route::put('/profil', [ProfilController::class, 'update']);
+
+    Route::get('/ruangan/data', [RuanganController::class, 'index']);
 
     // Khusus superadmin
     Route::middleware('cek.role:superadmin')->group(function () {
@@ -32,5 +34,10 @@ Route::middleware('cek.login')->group(function () {
         Route::post('/user', [UserController::class, 'store']);
         Route::put('/user/{id}', [UserController::class, 'update']);
         Route::delete('/user/{id}', [UserController::class, 'destroy']);
+
+        Route::view('/ruanganAdmin', 'ruanganAdmin');
+        Route::post('/ruangan', [RuanganController::class, 'store']);
+        Route::put('/ruangan/{id}', [RuanganController::class, 'update']);
+        Route::delete('/ruangan/{id}', [RuanganController::class, 'destroy']);
     });
 });

@@ -3,6 +3,7 @@
 
 <head>
   <title>Kelola Ruangan | PS Rental</title>
+  <meta name="csrf-token" content="{{ csrf_token() }}">
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -265,7 +266,7 @@
                 </div>
                 <div>
                   <h6 class="text-muted mb-1 fs-6">Total Ruangan</h6>
-                  <h4 class="mb-0 fw-bold" id="statTotalRuangan">6 Unit</h4>
+                  <h4 class="mb-0 fw-bold" id="statTotalRuangan">0 Unit</h4>
                 </div>
               </div>
             </div>
@@ -282,7 +283,7 @@
                 </div>
                 <div>
                   <h6 class="text-muted mb-1 fs-6">Unit PS5</h6>
-                  <h4 class="mb-0 fw-bold" id="statPS5">4 Unit</h4>
+                  <h4 class="mb-0 fw-bold" id="statPS5">0 Unit</h4>
                 </div>
               </div>
             </div>
@@ -299,7 +300,7 @@
                 </div>
                 <div>
                   <h6 class="text-muted mb-1 fs-6">Unit PS4</h6>
-                  <h4 class="mb-0 fw-bold" id="statPS4">2 Unit</h4>
+                  <h4 class="mb-0 fw-bold" id="statPS4">0 Unit</h4>
                 </div>
               </div>
             </div>
@@ -316,7 +317,7 @@
                 </div>
                 <div>
                   <h6 class="text-muted mb-1 fs-6">Sedang Digunakan</h6>
-                  <h4 class="mb-0 fw-bold" id="statRuanganAktif">2 Ruangan</h4>
+                  <h4 class="mb-0 fw-bold" id="statRuanganAktif">0 Ruangan</h4>
                 </div>
               </div>
             </div>
@@ -329,7 +330,7 @@
         <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
           <h5 class="mb-0">Daftar Ruangan PlayStation</h5>
           <span class="badge bg-light-primary text-primary px-3 py-2" id="badgeTotalRuangan">
-            Menampilkan 6 Ruangan
+            Menampilkan 0 Ruangan
           </span>
         </div>
 
@@ -345,7 +346,7 @@
                   type="text"
                   id="searchRuangan"
                   class="form-control border-start-0"
-                  placeholder="Cari nama, kode, atau spesifikasi ruangan..."
+                  placeholder="Cari nama, kode, atau jenis konsol..."
                   onkeyup="renderRoomsTable()">
               </div>
             </div>
@@ -354,8 +355,8 @@
             <div class="col-md-4 col-lg-3">
               <select id="filterTypeRuangan" class="form-select" onchange="renderRoomsTable()">
                 <option value="all">Semua Jenis Konsol</option>
-                <option value="PlayStation 5">PlayStation 5</option>
-                <option value="PlayStation 4">PlayStation 4</option>
+                <option value="PS5">PlayStation 5</option>
+                <option value="PS4">PlayStation 4</option>
               </select>
             </div>
           </div>
@@ -370,7 +371,6 @@
                 <th>Nama Ruangan</th>
                 <th>Jenis Konsol</th>
                 <th>Tarif Sewa</th>
-                <th>Fasilitas & Deskripsi</th>
                 <th>Status</th>
                 <th class="text-center" style="width: 100px;">Aksi</th>
               </tr>
@@ -403,43 +403,34 @@
           <input type="hidden" id="roomEditId" value="">
 
           <div class="modal-body">
+
+            <div id="roomFormAlert" class="alert alert-danger d-none" role="alert"></div>
+
             <div class="row g-3">
               <!-- Kode Ruangan -->
               <div class="col-md-6">
-                <label class="form-label small fw-semibold text-secondary">Kode Ruangan</label>
-                <input type="text" id="roomId" class="form-control" required readonly>
+                <label class="form-label small fw-semibold text-secondary" for="roomId">Kode Ruangan</label>
+                <input type="text" id="roomId" class="form-control" placeholder="Dibuat otomatis" readonly>
               </div>
 
               <!-- Nama Ruangan -->
               <div class="col-md-6">
-                <label class="form-label small fw-semibold text-secondary">Nama Ruangan</label>
-                <input type="text" id="roomName" class="form-control" placeholder="Contoh: PS Room 5" required>
+                <label class="form-label small fw-semibold text-secondary" for="roomName">Nama Ruangan</label>
+                <input type="text" id="roomName" class="form-control" placeholder="Contoh: PS Room 5" maxlength="15" required>
               </div>
 
-              <!-- Tipe Konsol -->
+              <!-- Jenis Konsol -->
               <div class="col-md-6">
-                <label class="form-label small fw-semibold text-secondary">Kategori Konsol</label>
+                <label class="form-label small fw-semibold text-secondary" for="roomType">Kategori Konsol</label>
                 <select id="roomType" class="form-select" required>
-                  <option value="PlayStation 5">PlayStation 5</option>
-                  <option value="PlayStation 4">PlayStation 4</option>
+                  <option value="PS5">PlayStation 5</option>
+                  <option value="PS4">PlayStation 4</option>
                 </select>
-              </div>
-
-              <!-- Detail Konsol -->
-              <div class="col-md-6">
-                <label class="form-label small fw-semibold text-secondary">Tipe Unit / Varian</label>
-                <input type="text" id="roomConsoleDetail" class="form-control" placeholder="Contoh: PS5 Disc Edition" required>
-              </div>
-
-              <!-- Tarif Sewa -->
-              <div class="col-md-6">
-                <label class="form-label small fw-semibold text-secondary">Tarif / Jam (Rp)</label>
-                <input type="number" id="roomPrice" class="form-control" placeholder="20000" min="5000" step="1000" required>
               </div>
 
               <!-- Status -->
               <div class="col-md-6">
-                <label class="form-label small fw-semibold text-secondary">Status Awal</label>
+                <label class="form-label small fw-semibold text-secondary" for="roomStatus">Status Ruangan</label>
                 <select id="roomStatus" class="form-select" required>
                   <option value="Tersedia">Tersedia</option>
                   <option value="Digunakan">Digunakan</option>
@@ -447,17 +438,17 @@
                 </select>
               </div>
 
-              <!-- Fasilitas / Deskripsi -->
+              <!-- Tarif Sewa -->
               <div class="col-12">
-                <label class="form-label small fw-semibold text-secondary">Fasilitas / Deskripsi Ruangan</label>
-                <textarea id="roomDesc" class="form-control" rows="3" placeholder="TV 43 inch, 2 Stik, AC, Sofa..." required></textarea>
+                <label class="form-label small fw-semibold text-secondary" for="roomPrice">Tarif / Jam (Rp)</label>
+                <input type="number" id="roomPrice" class="form-control" placeholder="20000" min="5000" step="1000" required>
               </div>
             </div>
           </div>
 
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-            <button type="submit" class="btn btn-primary">
+            <button type="submit" class="btn btn-primary" id="btnSimpanRoom">
               <i class="ti ti-device-floppy me-1"></i> Simpan Ruangan
             </button>
           </div>
