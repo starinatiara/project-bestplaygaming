@@ -67,6 +67,14 @@
                             Login
                         </button>
 
+                        <!-- PESAN ERROR LOGIN (TEKS TANPA KOTAK) -->
+                        <div
+                            id="loginError"
+                            class="text-danger small mt-2 text-center"
+                            role="alert"
+                            style="display: none;"
+                        ></div>
+
                     </form>
 
                 </div>
@@ -78,8 +86,25 @@
 </div>
 
 <script>
+    const loginError = document.getElementById("loginError");
+
+    function showLoginError(message) {
+        loginError.textContent = message;
+        loginError.style.display = "block";
+    }
+
+    function hideLoginError() {
+        loginError.style.display = "none";
+    }
+
+    // Sembunyikan error saat user mengetik lagi
+    document.getElementById("username").addEventListener("input", hideLoginError);
+    document.getElementById("password").addEventListener("input", hideLoginError);
+
     document.getElementById("loginForm").addEventListener("submit", async function (e) {
         e.preventDefault();
+
+        hideLoginError();
 
         const username = document.getElementById("username").value.trim();
         const password = document.getElementById("password").value;
@@ -100,7 +125,7 @@
             const data = await response.json();
 
             if (!response.ok) {
-                alert(data.message || "Login gagal.");
+                showLoginError(data.message || "Login gagal.");
                 tombol.disabled = false;
                 return;
             }
@@ -111,7 +136,7 @@
 
             window.location.href = data.redirect;
         } catch (err) {
-            alert("Tidak dapat terhubung ke server.");
+            showLoginError("Tidak dapat terhubung ke server.");
             tombol.disabled = false;
         }
     });
