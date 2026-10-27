@@ -16,12 +16,12 @@ Route::get('/logout', [AuthController::class, 'logout']);
 Route::view('/register', 'register');
 
 Route::middleware('cek.login')->group(function () {
-    Route::view('/dashboard', 'dashboard');
-    Route::view('/booking', 'booking');
-    Route::view('/ruangan', 'ruangan');
-    Route::view('/laporan', 'laporan');
-    Route::view('/tracking', 'tracking');
-    Route::view('/profil', 'profil');
+    Route::view('/dashboard', 'dashboard')->middleware('no.direct');
+    Route::view('/booking', 'booking')->middleware('no.direct');
+    Route::view('/ruangan', 'ruangan')->middleware('no.direct');
+    Route::view('/laporan', 'laporan')->middleware('no.direct');
+    Route::view('/tracking', 'tracking')->middleware('no.direct');
+    Route::view('/profil', 'profil')->middleware('no.direct');
     Route::get('/profil/data', [ProfilController::class, 'show']);
     Route::put('/profil', [ProfilController::class, 'update']);
 
@@ -29,13 +29,13 @@ Route::middleware('cek.login')->group(function () {
 
     // Khusus superadmin
     Route::middleware('cek.role:superadmin')->group(function () {
-        Route::view('/user', 'user');
+        Route::view('/user', 'user')->middleware('no.direct');
         Route::get('/user/data', [UserController::class, 'index']);
         Route::post('/user', [UserController::class, 'store']);
         Route::put('/user/{id}', [UserController::class, 'update']);
         Route::delete('/user/{id}', [UserController::class, 'destroy']);
 
-        Route::view('/ruanganAdmin', 'ruanganAdmin');
+        Route::view('/ruanganAdmin', 'ruanganAdmin')->middleware('no.direct');
         Route::post('/ruangan', [RuanganController::class, 'store']);
         Route::put('/ruangan/{id}', [RuanganController::class, 'update']);
         Route::delete('/ruangan/{id}', [RuanganController::class, 'destroy']);

@@ -14,6 +14,12 @@ return Application::configure(basePath: dirname(__DIR__))
     $middleware->alias([
         'cek.login' => \App\Http\Middleware\CekLogin::class,
         'cek.role'  => \App\Http\Middleware\CekRole::class,
+
+    ]);
+    $middleware->alias([
+    'cek.login' => \App\Http\Middleware\CekLogin::class,
+    'cek.role'  => \App\Http\Middleware\CekRole::class,
+    'no.direct' => \App\Http\Middleware\BlockDirectAccess::class,
     ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
