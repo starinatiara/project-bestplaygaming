@@ -540,6 +540,85 @@
         flex-wrap: wrap;
       }
     }
+    /* ================= DITAMBAHKAN: POPUP KONFIRMASI LOGOUT ================= */
+    #logoutModal .modal-content {
+      border: 0;
+      border-radius: 22px;
+      padding: 12px 8px 8px;
+      text-align: center;
+      box-shadow: 0 25px 60px rgba(15, 23, 42, 0.25);
+    }
+
+    #logoutModal.modal.fade .modal-dialog {
+      transform: scale(0.85) translateY(20px);
+      transition: transform 0.25s ease, opacity 0.25s ease;
+    }
+
+    #logoutModal.modal.show .modal-dialog {
+      transform: scale(1) translateY(0);
+    }
+
+    .logout-modal-icon {
+      width: 76px;
+      height: 76px;
+      margin: 14px auto 18px;
+      border-radius: 50%;
+      background: #fde8e8;
+      color: #dc3545;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      box-shadow: 0 0 0 10px #fff4f4;
+    }
+
+    .logout-modal-title {
+      font-size: 21px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .logout-modal-text {
+      color: #6c757d;
+      font-size: 14px;
+      margin-bottom: 0;
+    }
+
+    .logout-modal-actions {
+      display: flex;
+      gap: 12px;
+      padding: 22px 16px 14px;
+    }
+
+    .logout-modal-actions .btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+
+    .btn-logout-cancel {
+      background: #f1f5f9;
+      border: 1px solid #e5e7eb;
+      color: #475569;
+    }
+
+    .btn-logout-cancel:hover {
+      background: #e2e8f0;
+      color: #1e293b;
+    }
+
+    .btn-logout-confirm {
+      background: #dc3545;
+      border: 1px solid #dc3545;
+      color: #ffffff;
+    }
+
+    .btn-logout-confirm:hover {
+      background: #bb2d3b;
+      border-color: #bb2d3b;
+      color: #ffffff;
+    }
   </style>
 </head>
 
@@ -780,6 +859,33 @@
 
   </main>
 
+  <!-- =========================================================
+       DITAMBAHKAN: POPUP KONFIRMASI LOGOUT (TENGAH HALAMAN)
+  ========================================================== -->
+  <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content">
+
+        <div class="modal-body pb-0">
+          <div class="logout-modal-icon">
+            <i class="ti ti-logout"></i>
+          </div>
+
+
+          <p class="logout-modal-text">
+            Apakah Anda yakin ingin logout? 
+          </p>
+        </div>
+
+        <div class="logout-modal-actions">
+          <button type="button" class="btn btn-logout-cancel" data-bs-dismiss="modal">Tidak</button>
+          <button type="button" class="btn btn-logout-confirm" id="confirmLogoutBtn">Ya</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
 
   <!-- =========================================================
        JAVASCRIPT
@@ -828,14 +934,20 @@
     updateDateTime();
     setInterval(updateDateTime, 1000);
 
-    // Logout
+    // DIUBAH: confirm() bawaan browser diganti popup di tengah halaman.
+    // Proses logout (hapus role & username, lalu ke /logout) tidak berubah,
+    // hanya dijalankan saat tombol "Ya, Logout" diklik.
     function logout() {
-      if (confirm("Apakah Anda yakin ingin logout?")) {
-        localStorage.removeItem("role");
-        localStorage.removeItem("username");
-        window.location.href = "/logout";
-      }
+      bootstrap.Modal.getOrCreateInstance(
+        document.getElementById("logoutModal")
+      ).show();
     }
+
+    document.getElementById("confirmLogoutBtn").addEventListener("click", function () {
+      localStorage.removeItem("role");
+      localStorage.removeItem("username");
+      window.location.href = "/logout";
+    });
   </script>
 
 </body>
