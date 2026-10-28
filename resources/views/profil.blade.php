@@ -309,6 +309,8 @@
 
       text-align: left;
 
+      font-weight: 400;
+
     }
 
 
@@ -452,23 +454,246 @@
 
 
     /* =====================================================
-       PROFIL: link user card & sidebar bisa disembunyikan
+       DITAMBAHKAN: HAMBURGER + SIDEBAR TOGGLE
     ====================================================== */
 
-    .user-card-link .user-card {
-      transition: background 0.2s;
+    .sidebar {
+
+      overflow-y: auto;
+
+      transition: transform 0.25s ease;
+
     }
 
-    .user-card-link:hover .user-card {
-      background: #eef2f7;
+
+    .main-content {
+
+      transition: margin-left 0.25s ease;
+
     }
 
-    body.sidebar-collapsed .sidebar {
-      display: none;
+
+    .menu-toggle {
+
+      border: none;
+
+      background: transparent;
+
+      font-size: 26px;
+
+      line-height: 1;
+
+      padding: 6px 8px;
+
+      border-radius: 8px;
+
+      color: #495057;
+
+      cursor: pointer;
+
     }
 
-    body.sidebar-collapsed .main-content {
+
+    .menu-toggle:hover {
+
+      background: #f1f5f9;
+
+      color: #3b82f6;
+
+    }
+
+
+    /* Desktop: sidebar disembunyikan */
+
+    body.sidebar-hidden .sidebar {
+
+      transform: translateX(-100%);
+
+    }
+
+
+    body.sidebar-hidden .main-content {
+
       margin-left: 0;
+
+    }
+
+
+    /* Mobile / tablet: sidebar menjadi drawer */
+
+    @media (max-width: 991px) {
+
+      .sidebar {
+
+        position: fixed;
+
+        width: 280px;
+
+        min-height: 100vh;
+
+        transform: translateX(-100%);
+
+      }
+
+
+      .sidebar.show {
+
+        transform: translateX(0);
+
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.15);
+
+      }
+
+    }
+
+
+    /* =====================================================
+       DITAMBAHKAN: POPUP KONFIRMASI LOGOUT
+    ====================================================== */
+
+    #logoutModal .modal-content {
+
+      border: 0;
+
+      border-radius: 22px;
+
+      padding: 12px 8px 8px;
+
+      text-align: center;
+
+      box-shadow: 0 25px 60px rgba(15, 23, 42, 0.25);
+
+    }
+
+
+    #logoutModal.modal.fade .modal-dialog {
+
+      transform: scale(0.85) translateY(20px);
+
+      transition: transform 0.25s ease, opacity 0.25s ease;
+
+    }
+
+
+    #logoutModal.modal.show .modal-dialog {
+
+      transform: scale(1) translateY(0);
+
+    }
+
+
+    .logout-modal-icon {
+
+      width: 76px;
+
+      height: 76px;
+
+      margin: 14px auto 18px;
+
+      border-radius: 50%;
+
+      background: #fde8e8;
+
+      color: #dc3545;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      font-size: 36px;
+
+      box-shadow: 0 0 0 10px #fff4f4;
+
+    }
+
+
+    .logout-modal-title {
+
+      font-size: 21px;
+
+      font-weight: 700;
+
+      margin-bottom: 8px;
+
+    }
+
+
+    .logout-modal-text {
+
+      color: #6c757d;
+
+      font-size: 14px;
+
+      margin-bottom: 0;
+
+    }
+
+
+    .logout-modal-actions {
+
+      display: flex;
+
+      gap: 12px;
+
+      padding: 22px 16px 14px;
+
+    }
+
+
+    .logout-modal-actions .btn {
+
+      flex: 1;
+
+      padding: 12px;
+
+      border-radius: 12px;
+
+      font-weight: 600;
+
+    }
+
+
+    .btn-logout-cancel {
+
+      background: #f1f5f9;
+
+      border: 1px solid #e5e7eb;
+
+      color: #475569;
+
+    }
+
+
+    .btn-logout-cancel:hover {
+
+      background: #e2e8f0;
+
+      color: #1e293b;
+
+    }
+
+
+    .btn-logout-confirm {
+
+      background: #dc3545;
+
+      border: 1px solid #dc3545;
+
+      color: #ffffff;
+
+    }
+
+
+    .btn-logout-confirm:hover {
+
+      background: #bb2d3b;
+
+      border-color: #bb2d3b;
+
+      color: #ffffff;
+
     }
 
   </style>
@@ -483,7 +708,7 @@
      SIDEBAR
 ====================================================== -->
 
-<aside class="sidebar">
+<aside class="sidebar" id="sidebar">
 
 
   <!-- LOGO -->
@@ -496,11 +721,11 @@
   </a>
 
 
-  <!-- USER CARD -->
+  <!-- USER CARD + LOGOUT (satu baris) -->
+  <div style="display: flex; gap: 10px; align-items: stretch; margin-bottom: 25px;">
 
-  <a href="/profil" class="user-card-link d-block text-decoration-none text-reset" title="Profil Saya">
 
-  <div class="user-card">
+  <div class="user-card" onclick="window.location.href='/profil'" style="cursor:pointer; margin-bottom:0; flex:1; min-width:0;" title="Profil Saya">
 
     <div class="d-flex align-items-center">
 
@@ -535,8 +760,15 @@
 
   </div>
 
-  </a>
 
+  <!-- LOGOUT (DI SAMPING USER CARD, ikon saja) -->
+  <div class="logout-box" style="margin: 0;">
+    <button type="button" class="logout-btn" onclick="logout()" title="Logout" aria-label="Logout" style="width: auto; height: 100%; padding: 0 16px; text-align: center;">
+      <i class="ti ti-logout fs-5"></i>
+    </button>
+  </div>
+
+  </div>
 
   <!-- MENU -->
 
@@ -676,32 +908,6 @@
   </ul>
 
 
-  <!-- PROFILE -->
-
-  <div class="sidebar-bottom">
-
-
-    <!-- LOGOUT -->
-
-    <div class="logout-box">
-
-      <button
-        type="button"
-        class="logout-btn"
-        onclick="logout()">
-
-        <i class="ti ti-logout me-2"></i>
-
-        Logout
-
-      </button>
-
-    </div>
-
-
-  </div>
-
-
 </aside>
 
 <!-- =====================================================
@@ -711,10 +917,18 @@
 <main class="main-content">
 
   <header class="top-header">
-    <div>
-      <button type="button" class="btn btn-light border-0 fs-4 px-2 py-1" id="btnToggleSidebar" aria-label="Buka atau tutup menu">
+    <div class="d-flex align-items-center gap-2">
+
+      <button
+        type="button"
+        class="menu-toggle"
+        id="menuToggle"
+        aria-label="Toggle sidebar">
+
         <i class="ti ti-menu-2"></i>
+
       </button>
+
     </div>
     <div class="header-date">
       <i class="ti ti-calendar me-1"></i>
@@ -807,6 +1021,64 @@
 </main>
 
 
+<div
+  class="modal fade"
+  id="logoutModal"
+  tabindex="-1"
+  aria-labelledby="logoutModalTitle"
+  aria-hidden="true">
+
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+
+    <div class="modal-content">
+
+      <div class="modal-body pb-0">
+
+        <div class="logout-modal-icon">
+
+          <i class="ti ti-logout"></i>
+
+        </div>
+
+        
+
+        <p class="logout-modal-text">
+
+          Apakah Anda yakin ingin logout? 
+
+        </p>
+
+      </div>
+
+      <div class="logout-modal-actions">
+
+        <button
+          type="button"
+          class="btn btn-logout-cancel"
+          data-bs-dismiss="modal">
+
+          Tidak
+
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-logout-confirm"
+          id="confirmLogoutBtn">
+
+          Ya
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
@@ -843,9 +1115,20 @@
 
   /* ================= HAMBURGER ================= */
 
-  document.getElementById("btnToggleSidebar").addEventListener("click", function () {
-    document.body.classList.toggle("sidebar-collapsed");
-  });
+  const sidebar = document.getElementById("sidebar");
+  const menuToggle = document.getElementById("menuToggle");
+
+  if (menuToggle) {
+    menuToggle.addEventListener("click", function () {
+      if (window.innerWidth >= 992) {
+        // Desktop: sembunyikan / tampilkan sidebar
+        document.body.classList.toggle("sidebar-hidden");
+      } else {
+        // Mobile: buka / tutup sidebar
+        sidebar.classList.toggle("show");
+      }
+    });
+  }
 
 
   /* ================= TANGGAL & JAM ================= */
@@ -976,12 +1259,16 @@
   /* ================= LOGOUT ================= */
 
   function logout() {
-    if (confirm("Apakah Anda yakin ingin logout?")) {
-      localStorage.removeItem("role");
-      localStorage.removeItem("username");
-      window.location.href = "/logout";
-    }
+    bootstrap.Modal
+      .getOrCreateInstance(document.getElementById("logoutModal"))
+      .show();
   }
+
+  document.getElementById("confirmLogoutBtn").addEventListener("click", function () {
+    localStorage.removeItem("role");
+    localStorage.removeItem("username");
+    window.location.href = "/logout";
+  });
 
 </script>
 
