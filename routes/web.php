@@ -36,6 +36,7 @@ Route::middleware('cek.login')->group(function () {
         Route::delete('/user/{id}', [UserController::class, 'destroy']);
 
         Route::view('/ruanganAdmin', 'ruanganAdmin')->middleware('no.direct');
+        Route::view('/superadmin/laporan', 'laporan_superadmin')->middleware('no.direct');
         Route::post('/ruangan', [RuanganController::class, 'store']);
         Route::put('/ruangan/{id}', [RuanganController::class, 'update']);
         Route::delete('/ruangan/{id}', [RuanganController::class, 'destroy']);

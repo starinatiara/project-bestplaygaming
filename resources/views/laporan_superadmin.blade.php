@@ -35,6 +35,143 @@
       justify-content: center;
       font-size: 24px;
     }
+    /* =====================================================
+       DITAMBAHKAN: USER CARD + LOGOUT DI SAMPING (disamakan dengan halaman lain)
+    ====================================================== */
+
+    :root {
+      --pc-sidebar-width: 280px;
+    }
+
+    .sidebar-user-row {
+      display: flex;
+      align-items: stretch;
+      gap: 10px;
+      margin: 0 15px 15px;
+    }
+
+    .sidebar-user-row .pc-user-card {
+      flex: 1 1 auto;
+      min-width: 0;
+      margin: 0 !important;
+      box-shadow: none;
+      background: #f8f9fa;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+    }
+
+    .sidebar-user-row .pc-user-card .card-body {
+      padding: 16px;
+    }
+
+    .sidebar-logout-btn {
+      flex: 0 0 54px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      color: #dc3545;
+      font-size: 22px;
+      text-decoration: none;
+      transition: 0.2s;
+    }
+
+    .sidebar-logout-btn:hover {
+      background: #fde8e8;
+      color: #dc3545;
+    }
+
+    /* =====================================================
+       DITAMBAHKAN: POPUP KONFIRMASI LOGOUT
+    ====================================================== */
+
+    #logoutModal .modal-dialog {
+      max-width: 380px;
+    }
+
+    #logoutModal .modal-content {
+      border: 0;
+      border-radius: 24px;
+      padding: 18px 12px 10px;
+      text-align: center;
+      box-shadow: 0 25px 60px rgba(15, 23, 42, 0.25);
+    }
+
+    #logoutModal.modal.fade .modal-dialog {
+      transform: scale(0.85) translateY(20px);
+      transition: transform 0.25s ease, opacity 0.25s ease;
+    }
+
+    #logoutModal.modal.show .modal-dialog {
+      transform: scale(1) translateY(0);
+    }
+
+    .logout-modal-ring {
+      width: 120px;
+      height: 120px;
+      margin: 6px auto 14px;
+      border-radius: 50%;
+      background: #fff1f1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logout-modal-icon {
+      width: 78px;
+      height: 78px;
+      border-radius: 50%;
+      background: #fde8e8;
+      color: #dc3545;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 38px;
+    }
+
+    .logout-modal-text {
+      color: #6c757d;
+      font-size: 15px;
+      margin-bottom: 0;
+    }
+
+    .logout-modal-actions {
+      display: flex;
+      gap: 14px;
+      padding: 24px 12px 12px;
+    }
+
+    .logout-modal-actions .btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 12px;
+      font-weight: 700;
+    }
+
+    .btn-logout-cancel {
+      background: #f1f5f9;
+      border: 1px solid #e5e7eb;
+      color: #475569;
+    }
+
+    .btn-logout-cancel:hover {
+      background: #e2e8f0;
+      color: #1e293b;
+    }
+
+    .btn-logout-confirm {
+      background: #dc3545;
+      border: 1px solid #dc3545;
+      color: #ffffff;
+    }
+
+    .btn-logout-confirm:hover {
+      background: #bb2d3b;
+      border-color: #bb2d3b;
+      color: #ffffff;
+    }
   </style>
 </head>
 
@@ -60,19 +197,33 @@
       <!-- SIDEBAR CONTENT -->
       <div class="navbar-content">
 
-        <!-- USER CARD -->
-        <div class="card pc-user-card" onclick="window.location.href='/profil'" style="cursor:pointer" title="Profil Saya">
-          <div class="card-body">
-            <div class="d-flex align-items-center">
-              <div class="flex-shrink-0">
-                <img src="{{ asset('assets/images/user/avatar-1.jpg') }}" class="user-avtar wid-45 rounded-circle" alt="user">
-              </div>
-              <div class="flex-grow-1 ms-3">
-                <h6 class="mb-0" id="sidebarUsername">Superadmin</h6>
-                <small class="text-muted" id="sidebarRole">Superadmin</small>
+        <!-- USER CARD + LOGOUT (satu baris) -->
+        <div class="sidebar-user-row">
+
+          <!-- USER CARD -->
+          <div class="card pc-user-card" onclick="window.location.href='/profil'" style="cursor:pointer" title="Profil Saya">
+            <div class="card-body">
+              <div class="d-flex align-items-center">
+                <div class="flex-shrink-0">
+                  <img src="{{ asset('assets/images/user/avatar-1.jpg') }}" class="user-avtar wid-45 rounded-circle" alt="user">
+                </div>
+                <div class="flex-grow-1 ms-3">
+                  <h6 class="mb-0" id="sidebarUsername">Superadmin</h6>
+                  <small class="text-muted" id="sidebarRole">Superadmin</small>
+                </div>
               </div>
             </div>
           </div>
+
+          <!-- LOGOUT (ikon, membuka popup) -->
+          <a href="#"
+             class="sidebar-logout-btn"
+             title="Logout"
+             aria-label="Logout"
+             onclick="bukaPopupLogout(); return false;">
+            <i class="ti ti-logout"></i>
+          </a>
+
         </div>
 
         <!-- MENU -->
@@ -121,16 +272,6 @@
             </a>
           </li>
         </ul>
-
-        <!-- LOGOUT -->
-        <div class="card mt-3">
-          <div class="card-body p-3">
-            <a href="#" class="d-flex align-items-center text-danger text-decoration-none" onclick="logout(); return false;">
-              <i class="ti ti-logout me-2 fs-5"></i>
-              <span class="fw-semibold">Logout</span>
-            </a>
-          </div>
-        </div>
 
       </div>
     </div>
@@ -325,6 +466,32 @@
   </div>
 
   <!-- =========================================================
+       DITAMBAHKAN: POPUP KONFIRMASI LOGOUT (TENGAH HALAMAN)
+  ========================================================== -->
+  <div class="modal fade" id="logoutModal" tabindex="-1" aria-label="Konfirmasi logout" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+
+        <div class="modal-body pb-0">
+          <div class="logout-modal-ring">
+            <div class="logout-modal-icon">
+              <i class="ti ti-logout"></i>
+            </div>
+          </div>
+
+          <p class="logout-modal-text">Apakah Anda yakin ingin logout?</p>
+        </div>
+
+        <div class="logout-modal-actions">
+          <button type="button" class="btn btn-logout-cancel" data-bs-dismiss="modal">Tidak</button>
+          <button type="button" class="btn btn-logout-confirm" id="confirmLogoutBtn">Ya</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
        JAVASCRIPT
   ========================================================== -->
   <script src="{{ asset('assets/js/plugins/popper.min.js') }}"></script>
@@ -465,6 +632,47 @@
       });
 
     })();
+  </script>
+
+  <!-- =========================================================
+       DITAMBAHKAN: SCRIPT POPUP LOGOUT
+       Kode logout bawaan di atas TIDAK diubah. Saat "Ya" diklik,
+       logout() bawaan dijalankan tanpa confirm bawaan browser.
+  ========================================================== -->
+  <script>
+    function bukaPopupLogout() {
+      bootstrap.Modal.getOrCreateInstance(
+        document.getElementById("logoutModal")
+      ).show();
+    }
+
+    document.getElementById("confirmLogoutBtn").addEventListener("click", function () {
+
+      var confirmAsli = window.confirm;
+
+      window.confirm = function () { return true; };
+
+      try {
+
+        if (typeof window.logout === "function") {
+
+          window.logout();
+
+        } else {
+
+          localStorage.removeItem("role");
+          localStorage.removeItem("username");
+          window.location.href = "/logout";
+
+        }
+
+      } finally {
+
+        window.confirm = confirmAsli;
+
+      }
+
+    });
   </script>
 
 </body>
