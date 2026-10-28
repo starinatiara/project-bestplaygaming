@@ -2,202 +2,68 @@
 <html lang="id">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Booking Ruangan | PS Rental</title>
 
-  <!-- BOOTSTRAP 5 -->
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-    rel="stylesheet">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- TABLER ICON -->
-  <link rel="stylesheet" href="{{ asset('assets/fonts/tabler-icons.min.css') }}">
-
-  <!-- FONT -->
+  <!-- Font -->
   <link rel="stylesheet" href="{{ asset('assets/fonts/inter/inter.css') }}">
 
+  <!-- Icons -->
+  <link rel="stylesheet" href="{{ asset('assets/fonts/tabler-icons.min.css') }}">
+
+  <!-- Template CSS -->
+  <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+  <link rel="stylesheet" href="{{ asset('assets/css/style-preset.css') }}">
+
   <style>
-    /* ================= GLOBAL ================= */
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #f8f9fa;
-      color: #212529;
+    /* =====================================================
+       USER CARD + LOGOUT (sama dengan Dashboard)
+    ====================================================== */
+
+    :root {
+      --pc-sidebar-width: 280px;
     }
 
-    /* ================= SIDEBAR ================= */
-    .sidebar {
-      width: 280px;
-      min-height: 100vh;
-      position: fixed;
-      left: 0;
-      top: 0;
-      background: #ffffff;
-      border-right: 1px solid #dee2e6;
-      padding: 24px 16px;
-      z-index: 1000;
-      overflow-y: auto;
-      transition: transform 0.25s;
+    .sidebar-user-row {
+      display: flex;
+      align-items: stretch;
+      gap: 10px;
+      margin: 0 15px 15px;
     }
 
-    .brand {
-      font-size: 25px;
-      font-weight: 700;
-      color: #3b82f6;
-      text-decoration: none;
-      display: block;
-      padding: 0 10px 25px;
-    }
-
-    .user-card {
+    .sidebar-user-row .pc-user-card {
+      flex: 1 1 auto;
+      min-width: 0;
+      margin: 0 !important;
+      box-shadow: none;
       background: #f8f9fa;
       border: 1px solid #e5e7eb;
       border-radius: 16px;
-      padding: 18px;
-      margin-bottom: 25px;
     }
 
-    .user-avatar {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      object-fit: cover;
-    }
+    .sidebar-user-row .pc-user-card .card-body { padding: 16px; }
 
-    .user-name {
-      font-weight: 600;
-      margin-bottom: 2px;
-    }
-
-    .user-role {
-      color: #6c757d;
-      font-size: 14px;
-    }
-
-    .menu-title {
-      font-size: 13px;
-      font-weight: 700;
-      color: #495057;
-      text-transform: uppercase;
-      padding: 0 18px;
-      margin-bottom: 10px;
-    }
-
-    .sidebar-menu {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    .sidebar-menu li {
-      margin-bottom: 6px;
-    }
-
-    .sidebar-menu a {
+    .sidebar-logout-btn {
+      flex: 0 0 54px;
       display: flex;
       align-items: center;
-      gap: 15px;
-      padding: 13px 18px;
-      color: #64748b;
-      text-decoration: none;
-      border-radius: 10px;
-      transition: 0.2s;
-      font-size: 15px;
-    }
-
-    .sidebar-menu a:hover {
-      background: #f1f5f9;
-      color: #3b82f6;
-    }
-
-    .sidebar-menu a.active {
-      background: #e8f0ff;
-      color: #3b82f6;
-      font-weight: 600;
-    }
-
-    .sidebar-menu i {
-      font-size: 21px;
-    }
-
-    .logout-box {
-      margin-top: 20px;
-    }
-
-    .logout-btn {
-      width: 100%;
+      justify-content: center;
       background: #ffffff;
       border: 1px solid #e5e7eb;
+      border-radius: 16px;
       color: #dc3545;
-      padding: 14px;
-      border-radius: 12px;
-      text-align: left;
-      font-weight: 400;
+      font-size: 22px;
+      text-decoration: none;
+      transition: 0.2s;
     }
 
-    /* ================= MAIN ================= */
-    .main-content {
-      margin-left: 280px;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      transition: margin-left 0.25s ease; /* DITAMBAHKAN */
-    }
+    .sidebar-logout-btn:hover { background: #fde8e8; color: #dc3545; }
 
-    .top-header {
-      height: 80px;
-      background: #ffffff;
-      border-bottom: 1px solid #dee2e6;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 35px;
-    }
-
-    .header-date {
-      color: #6c757d;
-      font-size: 14px;
-    }
-
-    .menu-toggle {
-      border: none;
-      background: transparent;
-      font-size: 24px;
-      line-height: 1;
-      padding: 0;
-    }
-
-    .content {
-      padding: 35px;
-      flex: 1;
-    }
-
-    /* ================= CARD ================= */
-    .card {
-      border: 0;
-      border-radius: 12px;
-      box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075);
-    }
-
-    .card-header {
-      background: #ffffff;
-      border-bottom: 1px solid #eeeeee;
-    }
-
-    .bg-light-primary {
-      background-color: #e8f0ff !important;
-    }
-
-    /* ================= BOOKING ================= */
-    .booking-card {
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .booking-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-    }
+    /* =====================================================
+       BOOKING
+    ====================================================== */
 
     .price-box {
       background: #f8fafc;
@@ -205,83 +71,44 @@
       border-radius: 10px;
     }
 
-    /* ================= FOOTER ================= */
-    footer {
-      padding: 25px 35px;
-      color: #6c757d;
-      font-size: 14px;
+    /* =====================================================
+       POPUP KONFIRMASI LOGOUT
+    ====================================================== */
+
+    .lg-overlay {
+      position: fixed;
+      top: 0; right: 0; bottom: 0; left: 0;
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      background: rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.25s ease, visibility 0.25s ease;
     }
 
-    /* ================= DITAMBAHKAN: SIDEBAR TOGGLE (DESKTOP) ================= */
-    body.sidebar-hidden .sidebar {
-      transform: translateX(-100%);
-    }
+    .lg-overlay.show { opacity: 1; visibility: visible; }
 
-    body.sidebar-hidden .main-content {
-      margin-left: 0;
-    }
-
-    .menu-toggle {
-      font-size: 26px;
-      padding: 6px 8px;
-      border-radius: 8px;
-      color: #495057;
-    }
-
-    .menu-toggle:hover {
-      background: #f1f5f9;
-      color: #3b82f6;
-    }
-
-    /* ================= RESPONSIVE ================= */
-    @media (max-width: 991px) {
-      .sidebar {
-        transform: translateX(-100%);
-      }
-
-      .sidebar.show {
-        transform: translateX(0);
-        box-shadow: 0 0 30px rgba(0, 0, 0, 0.15);
-      }
-
-      .main-content {
-        margin-left: 0;
-      }
-
-      .top-header {
-        padding: 0 20px;
-      }
-
-      .content {
-        padding: 20px;
-      }
-
-      footer {
-        padding: 20px;
-      }
-    }
-    /* ================= DITAMBAHKAN: POPUP KONFIRMASI LOGOUT ================= */
-    #logoutModal .modal-content {
-      border: 0;
+    .lg-box {
+      width: 100%;
+      max-width: 300px;
+      background: #ffffff;
       border-radius: 22px;
       padding: 12px 8px 8px;
       text-align: center;
       box-shadow: 0 25px 60px rgba(15, 23, 42, 0.25);
-    }
-
-    #logoutModal.modal.fade .modal-dialog {
       transform: scale(0.85) translateY(20px);
-      transition: transform 0.25s ease, opacity 0.25s ease;
+      transition: transform 0.25s ease;
     }
 
-    #logoutModal.modal.show .modal-dialog {
-      transform: scale(1) translateY(0);
-    }
+    .lg-overlay.show .lg-box { transform: scale(1) translateY(0); }
 
-    .logout-modal-icon {
+    .lg-icon {
       width: 76px;
       height: 76px;
-      margin: 14px auto 18px;
+      margin: 18px auto 18px;
       border-radius: 50%;
       background: #fde8e8;
       color: #dc3545;
@@ -292,166 +119,159 @@
       box-shadow: 0 0 0 10px #fff4f4;
     }
 
-    .logout-modal-title {
-      font-size: 21px;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
+    .lg-text { color: #6c757d; font-size: 14px; margin: 0; padding: 0 16px; }
 
-    .logout-modal-text {
-      color: #6c757d;
-      font-size: 14px;
-      margin-bottom: 0;
-    }
+    .lg-actions { display: flex; gap: 12px; padding: 22px 16px 14px; }
 
-    .logout-modal-actions {
-      display: flex;
-      gap: 12px;
-      padding: 22px 16px 14px;
-    }
+    .lg-actions .btn { flex: 1; padding: 12px; border-radius: 12px; font-weight: 600; }
 
-    .logout-modal-actions .btn {
-      flex: 1;
-      padding: 12px;
-      border-radius: 12px;
-      font-weight: 600;
-    }
-
-    .btn-logout-cancel {
-      background: #f1f5f9;
-      border: 1px solid #e5e7eb;
-      color: #475569;
-    }
-
-    .btn-logout-cancel:hover {
-      background: #e2e8f0;
-      color: #1e293b;
-    }
-
-    .btn-logout-confirm {
-      background: #dc3545;
-      border: 1px solid #dc3545;
-      color: #ffffff;
-    }
-
-    .btn-logout-confirm:hover {
-      background: #bb2d3b;
-      border-color: #bb2d3b;
-      color: #ffffff;
-    }
+    .btn-logout-cancel { background: #f1f5f9; border: 1px solid #e5e7eb; color: #475569; }
+    .btn-logout-cancel:hover { background: #e2e8f0; color: #1e293b; }
+    .btn-logout-confirm { background: #dc3545; border: 1px solid #dc3545; color: #ffffff; }
+    .btn-logout-confirm:hover { background: #bb2d3b; border-color: #bb2d3b; color: #ffffff; }
   </style>
 </head>
 
-<body>
+<body
+  data-pc-preset="preset-1"
+  data-pc-sidebar-caption="true"
+  data-pc-layout="vertical"
+  data-pc-direction="ltr"
+  data-pc-theme_contrast=""
+  data-pc-theme="light">
 
   <!-- =========================================================
        SIDEBAR KASIR
   ========================================================== -->
-  <aside class="sidebar" id="sidebar">
+  <nav class="pc-sidebar">
+    <div class="navbar-wrapper">
 
-    <!-- LOGO -->
-    <a href="/dashboard" class="brand">PS Rental</a>
+      <!-- LOGO -->
+      <div class="m-header">
+        <a href="/dashboard" class="b-brand text-primary">
+          <span class="fw-bold fs-4">PS Rental</span>
+        </a>
+      </div>
 
-    <!-- USER CARD + LOGOUT (satu baris) -->
-    <div style="display: flex; gap: 10px; align-items: stretch; margin-bottom: 25px;">
+      <!-- SIDEBAR CONTENT -->
+      <div class="navbar-content">
 
-    <div class="user-card" onclick="window.location.href='/profil'" style="cursor:pointer; margin-bottom:0; flex:1; min-width:0;" title="Profil Saya" >
-      <div class="d-flex align-items-center">
-        <img
-          src="{{ asset('assets/images/user/avatar-1.jpg') }}"
-          class="user-avatar"
-          alt="user">
+        <!-- USER CARD + LOGOUT -->
+        <div class="sidebar-user-row">
 
-        <div class="ms-3">
-          <div class="user-name" id="sidebarUsername">Kasir</div>
-          <div class="user-role" id="sidebarRole">Kasir</div>
+          <!-- USER CARD -->
+          <div class="card pc-user-card" onclick="window.location.href='/profil'" style="cursor:pointer" title="Profil Saya">
+            <div class="card-body">
+              <div class="d-flex align-items-center">
+                <div class="flex-shrink-0">
+                  <img src="{{ asset('assets/images/user/avatar-1.jpg') }}" class="user-avtar wid-45 rounded-circle" alt="user">
+                </div>
+                <div class="flex-grow-1 ms-3">
+                  <h6 class="mb-0" id="sidebarUsername">Kasir</h6>
+                  <small class="text-muted" id="sidebarRole">Kasir</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- LOGOUT (ikon) -->
+          <a href="#" class="sidebar-logout-btn" title="Logout" onclick="logout(); return false;">
+            <i class="ti ti-logout"></i>
+          </a>
+
         </div>
+
+        <!-- MENU -->
+        <ul class="pc-navbar">
+          <li class="pc-item pc-caption">
+            <label>Menu</label>
+          </li>
+
+          <!-- Dashboard -->
+          <li class="pc-item">
+            <a href="/dashboard" class="pc-link">
+              <span class="pc-micon"><i class="ti ti-home"></i></span>
+              <span class="pc-mtext">Dashboard</span>
+            </a>
+          </li>
+
+          <!-- Booking (Active) -->
+          <li class="pc-item active">
+            <a href="/booking" class="pc-link">
+              <span class="pc-micon"><i class="ti ti-calendar-event"></i></span>
+              <span class="pc-mtext">Booking</span>
+            </a>
+          </li>
+
+          <!-- Ruangan -->
+          <li class="pc-item">
+            <a href="/ruangan" class="pc-link">
+              <span class="pc-micon"><i class="ti ti-device-gamepad"></i></span>
+              <span class="pc-mtext">Ruangan</span>
+            </a>
+          </li>
+
+          <!-- Tracking -->
+          <li class="pc-item">
+            <a href="/tracking" class="pc-link">
+              <span class="pc-micon"><i class="ti ti-receipt"></i></span>
+              <span class="pc-mtext">Tracking</span>
+            </a>
+          </li>
+
+          <!-- Laporan -->
+          <li class="pc-item">
+            <a href="/laporan" class="pc-link">
+              <span class="pc-micon"><i class="ti ti-report"></i></span>
+              <span class="pc-mtext">Laporan</span>
+            </a>
+          </li>
+        </ul>
+
       </div>
     </div>
-
-    <!-- LOGOUT (DI SAMPING USER CARD, ikon saja) -->
-    <div class="logout-box" style="margin: 0;">
-      <button type="button" class="logout-btn" onclick="logout()" title="Logout" aria-label="Logout" style="width: auto; height: 100%; padding: 0 16px; text-align: center;">
-        <i class="ti ti-logout fs-5"></i>
-      </button>
-    </div>
-
-    </div>
-
-    <!-- MENU -->
-    <div class="menu-title">Menu</div>
-
-    <ul class="sidebar-menu">
-
-      <li>
-        <a href="/dashboard">
-          <i class="ti ti-home"></i>
-          <span>Dashboard</span>
-        </a>
-      </li>
-
-      <li>
-        <a href="/booking" class="active">
-          <i class="ti ti-calendar-event"></i>
-          <span>Booking</span>
-        </a>
-      </li>
-
-      <li>
-        <a href="/ruangan">
-          <i class="ti ti-device-gamepad"></i>
-          <span>Ruangan</span>
-        </a>
-      </li>
-
-      <li>
-        <a href="/tracking">
-          <i class="ti ti-receipt"></i>
-          <span>Tracking</span>
-        </a>
-      </li>
-
-      <li>
-        <a href="/laporan">
-          <i class="ti ti-report"></i>
-          <span>Laporan</span>
-        </a>
-      </li>
-
-    </ul>
-
-  </aside>
+  </nav>
 
   <!-- =========================================================
-       MAIN
+       HEADER
   ========================================================== -->
-  <main class="main-content">
-
-    <!-- HEADER -->
-    <header class="top-header">
-
-      <!-- DITAMBAHKAN: d-lg-none dihapus agar hamburger tampil di desktop -->
-      <div>
-        <button type="button" class="menu-toggle" id="menuToggle" aria-label="Toggle sidebar">
-          <i class="ti ti-menu-2"></i>
-        </button>
+  <header class="pc-header">
+    <div class="header-wrapper">
+      <div class="me-auto pc-mob-drp">
+        <ul class="list-unstyled mb-0">
+          <li class="pc-h-item pc-sidebar-collapse">
+            <a href="#" class="pc-head-link ms-0" id="sidebar-hide">
+              <i class="ti ti-menu-2"></i>
+            </a>
+          </li>
+          <li class="pc-h-item pc-sidebar-popup">
+            <a href="#" class="pc-head-link ms-0" id="mobile-collapse">
+              <i class="ti ti-menu-2"></i>
+            </a>
+          </li>
+        </ul>
       </div>
 
-      <div class="header-date d-flex align-items-center gap-3">
-        <span>
-          <i class="ti ti-calendar me-1"></i>
-          <span id="currentDate">-</span>
-        </span>
-        <span>
-          <i class="ti ti-clock me-1"></i>
-          <span id="currentTime">-</span>
-        </span>
+      <div class="ms-auto">
+        <ul class="list-unstyled mb-0 d-flex align-items-center gap-3">
+          <li class="pc-h-item text-muted">
+            <i class="ti ti-calendar me-1"></i>
+            <span id="currentDate">-</span>
+          </li>
+          <li class="pc-h-item text-muted">
+            <i class="ti ti-clock me-1"></i>
+            <span id="currentTime">-</span>
+          </li>
+        </ul>
       </div>
+    </div>
+  </header>
 
-    </header>
-
-    <!-- CONTENT -->
-    <div class="content">
+  <!-- =========================================================
+       MAIN CONTENT
+  ========================================================== -->
+  <div class="pc-container">
+    <div class="pc-content">
 
       <!-- JUDUL HALAMAN -->
       <div class="row mb-3">
@@ -464,16 +284,13 @@
       <!-- NOTIFIKASI SUKSES -->
       <div id="bookingSuccessAlert" class="alert alert-success d-none py-2 px-3 small rounded-3 mb-3 shadow-sm" role="alert"></div>
 
-      <!-- GRID UTAMA -->
-      <div class="row g-3">
+      <!-- FORM TAMBAH BOOKING -->
+      <div class="row">
+        <div class="col-12">
 
-        <!-- =====================================================
-             KOLOM KIRI: FORM TAMBAH BOOKING
-        ====================================================== -->
-        <div class="col-lg-5">
-          <div class="card shadow-sm h-100">
-            <div class="card-header py-3">
-              <h5 class="mb-0 fs-6 fw-semibold">
+          <div class="card border-0 shadow-sm">
+            <div class="card-header">
+              <h5 class="mb-0">
                 <i class="ti ti-calendar-plus me-1 text-primary"></i> Tambah Booking Baru
               </h5>
             </div>
@@ -567,127 +384,47 @@
               </form>
             </div>
           </div>
-        </div>
-
-        <!-- =====================================================
-             KOLOM KANAN: STATUS RUANGAN & DAFTAR BOOKING
-        ====================================================== -->
-        <div class="col-lg-7">
-
-          <!-- KETERSEDIAAN RUANGAN -->
-          <div class="card shadow-sm mb-3">
-            <div class="card-header py-3 d-flex justify-content-between align-items-center">
-              <h5 class="mb-0 fs-6 fw-semibold">
-                <i class="ti ti-device-gamepad-2 me-1 text-primary"></i> Status Ketersediaan Ruangan Saat Ini
-              </h5>
-              <small class="text-muted">Klik kartu untuk memilih di form</small>
-            </div>
-            <div class="card-body">
-              <div class="row" id="roomAvailabilityList">
-                <!-- Render dinamis via booking.js -->
-              </div>
-            </div>
-          </div>
-
-          <!-- TABEL DAFTAR BOOKING -->
-          <div class="card shadow-sm">
-            <div class="card-header py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
-              <h5 class="mb-0 fs-6 fw-semibold">
-                <i class="ti ti-list me-1 text-primary"></i> Daftar Reservasi Booking
-              </h5>
-              <span class="badge bg-light-primary text-primary px-3 py-2" id="badgeTotalBooking">
-                Memuat data...
-              </span>
-            </div>
-
-            <!-- Toolbar Pencarian & Filter -->
-            <div class="card-body border-bottom py-2">
-              <div class="row g-2">
-                <div class="col-md-7">
-                  <div class="input-group input-group-sm">
-                    <span class="input-group-text bg-light border-end-0">
-                      <i class="ti ti-search text-muted"></i>
-                    </span>
-                    <input
-                      type="text"
-                      id="searchBooking"
-                      class="form-control border-start-0"
-                      placeholder="Cari pelanggan, HP, atau ruangan..."
-                      onkeyup="renderBookingsTable()">
-                  </div>
-                </div>
-                <div class="col-md-5">
-                  <select id="filterStatusBooking" class="form-select form-select-sm" onchange="renderBookingsTable()">
-                    <option value="all">Semua Status</option>
-                    <option value="Booking">Booking</option>
-                    <option value="Sedang Main">Sedang Main</option>
-                    <option value="Selesai">Selesai</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            <!-- Tabel -->
-            <div class="table-responsive">
-              <table class="table table-hover align-middle mb-0 small">
-                <thead class="table-light">
-                  <tr>
-                    <th style="width: 40px;">No</th>
-                    <th>ID</th>
-                    <th>Pelanggan</th>
-                    <th>Ruangan</th>
-                    <th>Jadwal</th>
-                    <th>Durasi</th>
-                    <th>Total</th>
-                    <th>Status</th>
-                    <th class="text-center" style="width: 110px;">Aksi</th>
-                  </tr>
-                </thead>
-                <tbody id="tabelBooking">
-                  <!-- Render dinamis via booking.js -->
-                </tbody>
-              </table>
-            </div>
-
-          </div>
 
         </div>
-
       </div>
 
-    </div>
-
-  </main>
-
-  <!-- =========================================================
-       DITAMBAHKAN: POPUP KONFIRMASI LOGOUT (TENGAH HALAMAN)
-  ========================================================== -->
-  <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-sm">
-      <div class="modal-content">
-
-        <div class="modal-body pb-0">
-          <div class="logout-modal-icon">
-            <i class="ti ti-logout"></i>
-          </div>
-
-
-          <p class="logout-modal-text">
-            Apakah Anda yakin ingin logout? 
-          </p>
-        </div>
-
-        <div class="logout-modal-actions">
-          <button type="button" class="btn btn-logout-cancel" data-bs-dismiss="modal">Tidak</button>
-          <button type="button" class="btn btn-logout-confirm" id="confirmLogoutBtn">Ya</button>
-        </div>
-
+      <!--
+        Elemen di bawah ini DISEMBUNYIKAN (bukan ditampilkan) karena booking.js
+        masih mencari id-nya. Kalau dihapus total, booking.js bisa error.
+      -->
+      <div class="d-none" aria-hidden="true">
+        <div id="roomAvailabilityList"></div>
+        <span id="badgeTotalBooking"></span>
+        <input type="text" id="searchBooking">
+        <select id="filterStatusBooking">
+          <option value="all">Semua Status</option>
+        </select>
+        <table><tbody id="tabelBooking"></tbody></table>
       </div>
+
     </div>
   </div>
 
   <!-- =========================================================
-       MODAL EDIT BOOKING
+       POPUP KONFIRMASI LOGOUT
+  ========================================================== -->
+  <div class="lg-overlay" id="logoutModal" aria-hidden="true">
+    <div class="lg-box" role="dialog" aria-modal="true">
+
+      <div class="lg-icon"><i class="ti ti-logout"></i></div>
+
+      <p class="lg-text">Apakah Anda yakin ingin logout?</p>
+
+      <div class="lg-actions">
+        <button type="button" class="btn btn-logout-cancel" id="cancelLogoutBtn">Tidak</button>
+        <button type="button" class="btn btn-logout-confirm" id="confirmLogoutBtn">Ya</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =========================================================
+       MODAL EDIT BOOKING (tetap ada, dipakai booking.js)
   ========================================================== -->
   <div class="modal fade" id="modalEditBooking" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -780,31 +517,18 @@
   <!-- =========================================================
        JAVASCRIPT
   ========================================================== -->
-
-  <!-- Bootstrap JS (sudah termasuk Popper) -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="{{ asset('assets/js/plugins/popper.min.js') }}"></script>
+  <script src="{{ asset('assets/js/plugins/simplebar.min.js') }}"></script>
+  <script src="{{ asset('assets/js/plugins/bootstrap.min.js') }}"></script>
+  <script src="{{ asset('assets/js/script.js') }}"></script>
+  <script src="{{ asset('assets/js/theme.js') }}"></script>
+  <script src="{{ asset('assets/js/plugins/feather.min.js') }}"></script>
 
   <!-- Script Logika Booking -->
   <script src="{{ asset('assets/js/pages/booking.js') }}"></script>
 
-  <!-- Script layout: toggle sidebar, tanggal & jam -->
+  <!-- Script layout: tanggal & jam, logout -->
   <script>
-    // DITAMBAHKAN: Toggle sidebar (desktop & mobile)
-    const sidebar = document.getElementById("sidebar");
-    const menuToggle = document.getElementById("menuToggle");
-
-    if (menuToggle) {
-      menuToggle.addEventListener("click", function () {
-        if (window.innerWidth >= 992) {
-          // Desktop: sembunyikan / tampilkan sidebar
-          document.body.classList.toggle("sidebar-hidden");
-        } else {
-          // Mobile: buka / tutup sidebar
-          sidebar.classList.toggle("show");
-        }
-      });
-    }
-
     // Tanggal & jam
     function updateDateTime() {
       const now = new Date();
@@ -828,14 +552,28 @@
     updateDateTime();
     setInterval(updateDateTime, 1000);
 
-    // DIUBAH: confirm() bawaan browser diganti popup di tengah halaman.
-    // Proses logout (hapus role & username, lalu ke /logout) tidak berubah,
-    // hanya dijalankan saat tombol "Ya, Logout" diklik.
+    // Popup logout di tengah halaman
+    const logoutModal = document.getElementById("logoutModal");
+
     window.logout = function () {
-      bootstrap.Modal.getOrCreateInstance(
-        document.getElementById("logoutModal")
-      ).show();
+      logoutModal.classList.add("show");
+      logoutModal.setAttribute("aria-hidden", "false");
     };
+
+    function tutupModalLogout() {
+      logoutModal.classList.remove("show");
+      logoutModal.setAttribute("aria-hidden", "true");
+    }
+
+    document.getElementById("cancelLogoutBtn").addEventListener("click", tutupModalLogout);
+
+    logoutModal.addEventListener("click", function (e) {
+      if (e.target === logoutModal) tutupModalLogout();
+    });
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") tutupModalLogout();
+    });
 
     document.getElementById("confirmLogoutBtn").addEventListener("click", function () {
       localStorage.removeItem("role");

@@ -2,2243 +2,743 @@
 <html lang="id">
 
 <head>
-
-  <meta charset="UTF-8">
-
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0">
-
   <title>Dashboard | PS Rental</title>
 
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- =====================================================
-       BOOTSTRAP 5
-  ====================================================== -->
+  <!-- Font -->
+  <link rel="stylesheet" href="{{ asset('assets/fonts/inter/inter.css') }}">
 
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-    rel="stylesheet">
+  <!-- Icons -->
+  <link rel="stylesheet" href="{{ asset('assets/fonts/tabler-icons.min.css') }}">
 
-
-  <!-- =====================================================
-       TABLER ICON
-  ====================================================== -->
-
-  <link
-    rel="stylesheet"
-    href="{{ asset('assets/fonts/tabler-icons.min.css') }}">
-
-
-  <!-- =====================================================
-       FONT
-  ====================================================== -->
-
-  <link
-    rel="stylesheet"
-    href="{{ asset('assets/fonts/inter/inter.css') }}">
-
+  <!-- Template CSS -->
+  <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+  <link rel="stylesheet" href="{{ asset('assets/css/style-preset.css') }}">
 
   <style>
-
     /* =====================================================
-       GLOBAL
+       USER CARD + LOGOUT (sama dengan halaman Ruangan)
     ====================================================== */
 
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #f8f9fa;
-      color: #212529;
+    :root {
+      --pc-sidebar-width: 280px;
     }
 
-
-    /* =====================================================
-       SIDEBAR
-    ====================================================== */
-
-    .sidebar {
-
-      width: 280px;
-
-      min-height: 100vh;
-
-      position: fixed;
-
-      left: 0;
-      top: 0;
-
-      background: #ffffff;
-
-      border-right: 1px solid #dee2e6;
-
-      padding: 24px 16px;
-
-      z-index: 1000;
-
+    .sidebar-user-row {
+      display: flex;
+      align-items: stretch;
+      gap: 10px;
+      margin: 0 15px 15px;
     }
 
-
-    .brand {
-
-      font-size: 25px;
-
-      font-weight: 700;
-
-      color: #3b82f6;
-
-      text-decoration: none;
-
-      display: block;
-
-      padding: 0 10px 25px;
-
-    }
-
-
-    /* =====================================================
-       USER CARD
-    ====================================================== */
-
-    .user-card {
-
+    .sidebar-user-row .pc-user-card {
+      flex: 1 1 auto;
+      min-width: 0;
+      margin: 0 !important;
+      box-shadow: none;
       background: #f8f9fa;
-
       border: 1px solid #e5e7eb;
-
       border-radius: 16px;
-
-      padding: 18px;
-
-      margin-bottom: 25px;
-
     }
 
+    .sidebar-user-row .pc-user-card .card-body { padding: 16px; }
 
-    .user-avatar {
-
-      width: 48px;
-
-      height: 48px;
-
-      border-radius: 50%;
-
-      object-fit: cover;
-
-    }
-
-
-    .user-name {
-
-      font-weight: 600;
-
-      margin-bottom: 2px;
-
-    }
-
-
-    .user-role {
-
-      color: #6c757d;
-
-      font-size: 14px;
-
-    }
-
-
-    /* =====================================================
-       SIDEBAR MENU
-    ====================================================== */
-
-    .menu-title {
-
-      font-size: 13px;
-
-      font-weight: 700;
-
-      color: #495057;
-
-      text-transform: uppercase;
-
-      padding: 0 18px;
-
-      margin-bottom: 10px;
-
-    }
-
-
-    .sidebar-menu {
-
-      list-style: none;
-
-      padding: 0;
-
-      margin: 0;
-
-    }
-
-
-    .sidebar-menu li {
-
-      margin-bottom: 6px;
-
-    }
-
-
-    .sidebar-menu a {
-
+    .sidebar-logout-btn {
+      flex: 0 0 54px;
       display: flex;
-
       align-items: center;
-
-      gap: 15px;
-
-      padding: 13px 18px;
-
-      color: #64748b;
-
-      text-decoration: none;
-
-      border-radius: 10px;
-
-      transition: 0.2s;
-
-      font-size: 15px;
-
-    }
-
-
-    .sidebar-menu a:hover {
-
-      background: #f1f5f9;
-
-      color: #3b82f6;
-
-    }
-
-
-    .sidebar-menu a.active {
-
-      background: #e8f0ff;
-
-      color: #3b82f6;
-
-      font-weight: 600;
-
-    }
-
-
-    .sidebar-menu i {
-
-      font-size: 21px;
-
-    }
-
-
-    /* =====================================================
-       SIDEBAR BOTTOM
-    ====================================================== */
-
-    .sidebar-bottom {
-
-      margin-top: 30px;
-
-    }
-
-
-    .profile-box {
-
-      border: 1px solid #e5e7eb;
-
-      border-radius: 15px;
-
-      padding: 20px;
-
-      text-align: center;
-
+      justify-content: center;
       background: #ffffff;
-
-    }
-
-
-    .profile-box i {
-
-      font-size: 28px;
-
-    }
-
-
-    .profile-box h6 {
-
-      margin-top: 10px;
-
-      margin-bottom: 3px;
-
-    }
-
-
-    .profile-box small {
-
-      color: #6c757d;
-
-    }
-
-
-    .logout-box {
-
-      margin-top: 15px;
-
-    }
-
-
-    .logout-btn {
-
-      width: 100%;
-
-      border: none;
-
-      background: #ffffff;
-
       border: 1px solid #e5e7eb;
-
+      border-radius: 16px;
       color: #dc3545;
-
-      padding: 14px;
-
-      border-radius: 12px;
-
-      text-align: left;
-
-      font-weight: 400;
-
+      font-size: 22px;
+      text-decoration: none;
+      transition: 0.2s;
     }
 
+    .sidebar-logout-btn:hover { background: #fde8e8; color: #dc3545; }
 
     /* =====================================================
-       MAIN
+       KARTU STATISTIK & RUANGAN
     ====================================================== */
 
-    .main-content {
-
-      margin-left: 280px;
-
-      min-height: 100vh;
-
-    }
-
-
-    /* =====================================================
-       HEADER
-    ====================================================== */
-
-    .top-header {
-
-      height: 80px;
-
-      background: #ffffff;
-
-      border-bottom: 1px solid #dee2e6;
-
-      display: flex;
-
-      align-items: center;
-
-      justify-content: space-between;
-
-      padding: 0 35px;
-
-    }
-
-
-    .header-title {
-
-      font-size: 20px;
-
-      font-weight: 600;
-
-      margin: 0;
-
-    }
-
-
-    .header-date {
-
-      color: #6c757d;
-
-      font-size: 14px;
-
-    }
-
-
-    /* =====================================================
-       CONTENT
-    ====================================================== */
-
-    .content {
-
-      padding: 35px;
-
-    }
-
-
-    .welcome-title {
-
-      font-size: 25px;
-
-      font-weight: 600;
-
-    }
-
-
-    .welcome-text {
-
-      color: #6c757d;
-
-    }
-
-
-    /* =====================================================
-       STATISTIC CARD
-    ====================================================== */
-
-    .stat-card {
-
-      background: #ffffff;
-
-      border: 1px solid #e5e7eb;
-
-      border-radius: 15px;
-
-      padding: 22px;
-
-      height: 100%;
-
-    }
-
-
-    .stat-label {
-
-      color: #6c757d;
-
-      font-size: 14px;
-
-      margin-bottom: 8px;
-
-    }
-
-
-    .stat-number {
-
-      font-size: 28px;
-
-      font-weight: 700;
-
-      margin: 0;
-
-    }
-
+    .stat-box { transition: transform 0.2s, box-shadow 0.2s; }
+    .stat-box:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
 
     .stat-icon {
-
       width: 48px;
-
       height: 48px;
-
       border-radius: 12px;
-
       display: flex;
-
       align-items: center;
-
       justify-content: center;
-
-      font-size: 23px;
-
+      font-size: 24px;
     }
 
-
-    .icon-blue {
-
-      background: #e8f0ff;
-
-      color: #3b82f6;
-
-    }
-
-
-    .icon-red {
-
-      background: #fde8e8;
-
-      color: #dc3545;
-
-    }
-
-
-    .icon-yellow {
-
-      background: #fff4d6;
-
-      color: #d99a00;
-
-    }
-
-
-    .icon-green {
-
-      background: #e5f7ed;
-
-      color: #198754;
-
-    }
-
-
-    /* =====================================================
-       ROOM CARD
-    ====================================================== */
+    .stat-number { font-size: 28px; font-weight: 700; margin: 0; }
 
     .room-card {
-
       border: 1px solid #e5e7eb;
-
       border-radius: 13px;
-
       background: #ffffff;
-
-      height: 100%;
-
-      transition: 0.2s;
-
-    }
-
-
-    .room-card:hover {
-
-      transform: translateY(-2px);
-
-      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-
-    }
-
-
-    .room-card-body {
-
       padding: 20px;
-
+      height: 100%;
+      transition: 0.2s;
     }
 
+    .room-card:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
 
-    .room-title {
+    .room-title { font-size: 1rem; font-weight: 600; margin: 0; }
+    .room-icon { font-size: 22px; margin-right: 7px; }
+    .room-info { color: #6c757d; font-size: 13px; margin-bottom: 7px; }
 
-      font-weight: 600;
-
-      margin: 0;
-
-    }
-
-
-    .room-icon {
-
-      font-size: 22px;
-
-      margin-right: 7px;
-
-    }
-
-
-    .room-info {
-
-      color: #6c757d;
-
-      font-size: 13px;
-
-      margin-bottom: 7px;
-
-    }
-
-
-    .timer-box {
-
-      background: #fff1f1;
-
-      color: #dc3545;
-
-      padding: 10px;
-
-      border-radius: 8px;
-
-      text-align: center;
-
-      margin-top: 15px;
-
-      font-weight: 600;
-
-    }
-
-
-    /* =====================================================
-       BOOKING
-    ====================================================== */
 
     .booking-item {
-
       display: flex;
-
       justify-content: space-between;
-
       align-items: center;
-
       padding: 15px 0;
-
       border-bottom: 1px solid #eeeeee;
-
     }
 
-
-    .booking-item:last-child {
-
-      border-bottom: none;
-
-    }
-
-
-    .booking-time {
-
-      font-weight: 600;
-
-      font-size: 15px;
-
-    }
-
-
-    .booking-customer {
-
-      color: #6c757d;
-
-      font-size: 13px;
-
-    }
-
+    .booking-item:last-child { border-bottom: none; }
+    .booking-time { font-weight: 600; font-size: 15px; }
+    .booking-customer { color: #6c757d; font-size: 13px; }
 
     /* =====================================================
-       FOOTER
+       POPUP KONFIRMASI LOGOUT
     ====================================================== */
 
-    footer {
-
-      padding: 25px 35px;
-
-      color: #6c757d;
-
-      font-size: 14px;
-
-    }
-
-
-    /* =====================================================
-       RESPONSIVE
-    ====================================================== */
-
-    @media (max-width: 991px) {
-
-      .sidebar {
-
-        position: relative;
-
-        width: 100%;
-
-        min-height: auto;
-
-      }
-
-
-      .main-content {
-
-        margin-left: 0;
-
-      }
-
-
-      .top-header {
-
-        padding: 0 20px;
-
-      }
-
-
-      .content {
-
-        padding: 20px;
-
-      }
-
-    }
-
-
-    /* =====================================================
-       DITAMBAHKAN: HAMBURGER + SIDEBAR TOGGLE
-    ====================================================== */
-
-    .sidebar {
-
-      overflow-y: auto;
-
-      transition: transform 0.25s ease;
-
-    }
-
-
-    .main-content {
-
-      transition: margin-left 0.25s ease;
-
-    }
-
-
-    .menu-toggle {
-
-      border: none;
-
-      background: transparent;
-
-      font-size: 26px;
-
-      line-height: 1;
-
-      padding: 6px 8px;
-
-      border-radius: 8px;
-
-      color: #495057;
-
-      cursor: pointer;
-
-    }
-
-
-    .menu-toggle:hover {
-
-      background: #f1f5f9;
-
-      color: #3b82f6;
-
-    }
-
-
-    /* Desktop: sidebar disembunyikan */
-
-    body.sidebar-hidden .sidebar {
-
-      transform: translateX(-100%);
-
-    }
-
-
-    body.sidebar-hidden .main-content {
-
-      margin-left: 0;
-
-    }
-
-
-    /* Mobile / tablet: sidebar menjadi drawer */
-
-    @media (max-width: 991px) {
-
-      .sidebar {
-
-        position: fixed;
-
-        width: 280px;
-
-        min-height: 100vh;
-
-        transform: translateX(-100%);
-
-      }
-
-
-      .sidebar.show {
-
-        transform: translateX(0);
-
-        box-shadow: 0 0 30px rgba(0, 0, 0, 0.15);
-
-      }
-
-    }
-
-
-    /* =====================================================
-       DITAMBAHKAN: POPUP KONFIRMASI LOGOUT
-    ====================================================== */
-
-    #logoutModal .modal-content {
-
-      border: 0;
-
-      border-radius: 22px;
-
-      padding: 12px 8px 8px;
-
-      text-align: center;
-
-      box-shadow: 0 25px 60px rgba(15, 23, 42, 0.25);
-
-    }
-
-
-    #logoutModal.modal.fade .modal-dialog {
-
-      transform: scale(0.85) translateY(20px);
-
-      transition: transform 0.25s ease, opacity 0.25s ease;
-
-    }
-
-
-    #logoutModal.modal.show .modal-dialog {
-
-      transform: scale(1) translateY(0);
-
-    }
-
-
-    .logout-modal-icon {
-
-      width: 76px;
-
-      height: 76px;
-
-      margin: 14px auto 18px;
-
-      border-radius: 50%;
-
-      background: #fde8e8;
-
-      color: #dc3545;
-
+    .lg-overlay {
+      position: fixed;
+      top: 0; right: 0; bottom: 0; left: 0;
+      z-index: 2000;
       display: flex;
-
       align-items: center;
-
       justify-content: center;
-
-      font-size: 36px;
-
-      box-shadow: 0 0 0 10px #fff4f4;
-
+      padding: 16px;
+      background: rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.25s ease, visibility 0.25s ease;
     }
 
+    .lg-overlay.show { opacity: 1; visibility: visible; }
 
-    .logout-modal-title {
-
-      font-size: 21px;
-
-      font-weight: 700;
-
-      margin-bottom: 8px;
-
+    .lg-box {
+      width: 100%;
+      max-width: 300px;
+      background: #ffffff;
+      border-radius: 22px;
+      padding: 12px 8px 8px;
+      text-align: center;
+      box-shadow: 0 25px 60px rgba(15, 23, 42, 0.25);
+      transform: scale(0.85) translateY(20px);
+      transition: transform 0.25s ease;
     }
 
+    .lg-overlay.show .lg-box { transform: scale(1) translateY(0); }
 
-    .logout-modal-text {
-
-      color: #6c757d;
-
-      font-size: 14px;
-
-      margin-bottom: 0;
-
-    }
-
-
-    .logout-modal-actions {
-
+    .lg-icon {
+      width: 76px;
+      height: 76px;
+      margin: 18px auto 18px;
+      border-radius: 50%;
+      background: #fde8e8;
+      color: #dc3545;
       display: flex;
-
-      gap: 12px;
-
-      padding: 22px 16px 14px;
-
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      box-shadow: 0 0 0 10px #fff4f4;
     }
 
+    .lg-text { color: #6c757d; font-size: 14px; margin: 0; padding: 0 16px; }
 
-    .logout-modal-actions .btn {
+    .lg-actions { display: flex; gap: 12px; padding: 22px 16px 14px; }
 
-      flex: 1;
+    .lg-actions .btn { flex: 1; padding: 12px; border-radius: 12px; font-weight: 600; }
 
-      padding: 12px;
-
-      border-radius: 12px;
-
-      font-weight: 600;
-
-    }
-
-
-    .btn-logout-cancel {
-
-      background: #f1f5f9;
-
-      border: 1px solid #e5e7eb;
-
-      color: #475569;
-
-    }
-
-
-    .btn-logout-cancel:hover {
-
-      background: #e2e8f0;
-
-      color: #1e293b;
-
-    }
-
-
-    .btn-logout-confirm {
-
-      background: #dc3545;
-
-      border: 1px solid #dc3545;
-
-      color: #ffffff;
-
-    }
-
-
-    .btn-logout-confirm:hover {
-
-      background: #bb2d3b;
-
-      border-color: #bb2d3b;
-
-      color: #ffffff;
-
-    }
-
-
+    .btn-logout-cancel { background: #f1f5f9; border: 1px solid #e5e7eb; color: #475569; }
+    .btn-logout-cancel:hover { background: #e2e8f0; color: #1e293b; }
+    .btn-logout-confirm { background: #dc3545; border: 1px solid #dc3545; color: #ffffff; }
+    .btn-logout-confirm:hover { background: #bb2d3b; border-color: #bb2d3b; color: #ffffff; }
   </style>
-
 </head>
 
+<body
+  data-pc-preset="preset-1"
+  data-pc-sidebar-caption="true"
+  data-pc-layout="vertical"
+  data-pc-direction="ltr"
+  data-pc-theme_contrast=""
+  data-pc-theme="light">
 
-<body>
+  <!-- =========================================================
+       SIDEBAR
+  ========================================================== -->
+  <nav class="pc-sidebar">
+    <div class="navbar-wrapper">
 
-
-<!-- =====================================================
-     SIDEBAR
-====================================================== -->
-
-<!-- DITAMBAHKAN: id="sidebar" -->
-<aside class="sidebar" id="sidebar">
-
-
-  <!-- LOGO -->
-
-  <a href="/dashboard"
-     class="brand">
-
-    PS Rental
-
-  </a>
-
-
-  <!-- USER CARD + LOGOUT (satu baris) -->
-  <div style="display: flex; gap: 10px; align-items: stretch; margin-bottom: 25px;">
-
-
-  <div class="user-card" onclick="window.location.href='/profil'" style="cursor:pointer; margin-bottom:0; flex:1; min-width:0;" title="Profil Saya">
-
-    <div class="d-flex align-items-center">
-
-      <img
-        src="{{ asset('assets/images/user/avatar-1.jpg') }}"
-        class="user-avatar"
-        alt="User">
-
-
-      <div class="ms-3">
-
-        <div
-          class="user-name"
-          id="sidebarUsername">
-
-          User
-
-        </div>
-
-
-        <div
-          class="user-role"
-          id="sidebarRole">
-
-          Role
-
-        </div>
-
+      <!-- LOGO -->
+      <div class="m-header">
+        <a href="/dashboard" class="b-brand text-primary">
+          <span class="fw-bold fs-4">PS Rental</span>
+        </a>
       </div>
 
+      <!-- SIDEBAR CONTENT -->
+      <div class="navbar-content">
+
+        <!-- USER CARD + LOGOUT -->
+        <div class="sidebar-user-row">
+
+          <!-- USER CARD -->
+          <div class="card pc-user-card" onclick="window.location.href='/profil'" style="cursor:pointer" title="Profil Saya">
+            <div class="card-body">
+              <div class="d-flex align-items-center">
+                <div class="flex-shrink-0">
+                  <img src="{{ asset('assets/images/user/avatar-1.jpg') }}" class="user-avtar wid-45 rounded-circle" alt="user">
+                </div>
+                <div class="flex-grow-1 ms-3">
+                  <h6 class="mb-0" id="sidebarUsername">User</h6>
+                  <small class="text-muted" id="sidebarRole">Role</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- LOGOUT (ikon) -->
+          <a href="#" class="sidebar-logout-btn" title="Logout" onclick="logout(); return false;">
+            <i class="ti ti-logout"></i>
+          </a>
+
+        </div>
+
+        <!-- MENU -->
+        <ul class="pc-navbar">
+          <li class="pc-item pc-caption">
+            <label>Menu</label>
+          </li>
+
+          <!-- Dashboard (Active) -->
+          <li class="pc-item active">
+            <a href="/dashboard" class="pc-link">
+              <span class="pc-micon"><i class="ti ti-home"></i></span>
+              <span class="pc-mtext">Dashboard</span>
+            </a>
+          </li>
+
+          <!-- SUPERADMIN -->
+          <li class="pc-item menu-superadmin">
+            <a href="/ruanganAdmin" class="pc-link">
+              <span class="pc-micon"><i class="ti ti-device-gamepad"></i></span>
+              <span class="pc-mtext">Ruangan</span>
+            </a>
+          </li>
+
+          <li class="pc-item menu-superadmin">
+            <a href="/user" class="pc-link">
+              <span class="pc-micon"><i class="ti ti-users"></i></span>
+              <span class="pc-mtext">Data User</span>
+            </a>
+          </li>
+
+          <!-- KASIR -->
+          <li class="pc-item menu-kasir">
+            <a href="/booking" class="pc-link">
+              <span class="pc-micon"><i class="ti ti-calendar-event"></i></span>
+              <span class="pc-mtext">Booking</span>
+            </a>
+          </li>
+
+          <li class="pc-item menu-kasir">
+            <a href="/ruangan" class="pc-link">
+              <span class="pc-micon"><i class="ti ti-device-gamepad"></i></span>
+              <span class="pc-mtext">Ruangan</span>
+            </a>
+          </li>
+
+          <li class="pc-item menu-kasir">
+            <a href="/tracking" class="pc-link">
+              <span class="pc-micon"><i class="ti ti-receipt"></i></span>
+              <span class="pc-mtext">Tracking</span>
+            </a>
+          </li>
+
+          <!-- LAPORAN (SEMUA ROLE) -->
+          <li class="pc-item">
+            <a href="/laporan" class="pc-link">
+              <span class="pc-micon"><i class="ti ti-report"></i></span>
+              <span class="pc-mtext">Laporan</span>
+            </a>
+          </li>
+        </ul>
+
+      </div>
     </div>
+  </nav>
 
-  </div>
-
-
-  <!-- LOGOUT (DI SAMPING USER CARD, ikon saja) -->
-  <div class="logout-box" style="margin: 0;">
-    <button type="button" class="logout-btn" onclick="logout()" title="Logout" aria-label="Logout" style="width: auto; height: 100%; padding: 0 16px; text-align: center;">
-      <i class="ti ti-logout fs-5"></i>
-    </button>
-  </div>
-
-  </div>
-
-  <!-- MENU -->
-
-  <div class="menu-title">
-
-    Menu
-
-  </div>
-
-
-  <ul class="sidebar-menu">
-
-
-    <!-- DASHBOARD -->
-
-    <li>
-
-      <a
-        href="/dashboard"
-        class="active">
-
-        <i class="ti ti-home"></i>
-
-        <span>
-          Dashboard
-        </span>
-
-      </a>
-
-    </li>
-
-
-    <!-- =================================================
-         SUPERADMIN
-    ================================================== -->
-
-
-    <li class="menu-superadmin">
-
-      <a href="/ruanganAdmin">
-
-        <i class="ti ti-device-gamepad"></i>
-
-        <span>
-          Ruangan
-        </span>
-
-      </a>
-
-    </li>
-
-
-    <li class="menu-superadmin">
-
-      <a href="/user">
-
-        <i class="ti ti-users"></i>
-
-        <span>
-          Data User
-        </span>
-
-      </a>
-
-    </li>
-
-
-    <!-- =================================================
-         KASIR
-    ================================================== -->
-
-
-    <li class="menu-kasir">
-
-      <a href="/booking">
-
-        <i class="ti ti-calendar-event"></i>
-
-        <span>
-          Booking
-        </span>
-
-      </a>
-
-    </li>
-
-
-    <li class="menu-kasir">
-
-      <a href="/ruangan">
-
-        <i class="ti ti-device-gamepad"></i>
-
-        <span>
-          Ruangan
-        </span>
-
-      </a>
-
-    </li>
-
-
-    <li class="menu-kasir">
-
-      <a href="/tracking">
-
-        <i class="ti ti-receipt"></i>
-
-        <span>
-          Tracking
-        </span>
-
-      </a>
-
-    </li>
-
-
-    <!-- =================================================
-         LAPORAN
-         AKSES SEMUA ROLE
-    ================================================== -->
-
-    <li>
-
-      <a href="/laporan">
-
-        <i class="ti ti-report"></i>
-
-        <span>
-          Laporan
-        </span>
-
-      </a>
-
-    </li>
-
-
-  </ul>
-
-
-</aside>
-
-
-
-<!-- =====================================================
-     MAIN CONTENT
-====================================================== -->
-
-<main class="main-content">
-
-
-  <!-- ===================================================
+  <!-- =========================================================
        HEADER
-  ==================================================== -->
+  ========================================================== -->
+  <header class="pc-header">
+    <div class="header-wrapper">
+      <div class="me-auto pc-mob-drp">
+        <ul class="list-unstyled mb-0">
+          <li class="pc-h-item pc-sidebar-collapse">
+            <a href="#" class="pc-head-link ms-0" id="sidebar-hide">
+              <i class="ti ti-menu-2"></i>
+            </a>
+          </li>
+          <li class="pc-h-item pc-sidebar-popup">
+            <a href="#" class="pc-head-link ms-0" id="mobile-collapse">
+              <i class="ti ti-menu-2"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
 
-  <header class="top-header">
-
-
-    <!-- DITAMBAHKAN: tombol hamburger di sebelah judul -->
-    <div class="d-flex align-items-center gap-2">
-
-      <button
-        type="button"
-        class="menu-toggle"
-        id="menuToggle"
-        aria-label="Toggle sidebar">
-
-        <i class="ti ti-menu-2"></i>
-
-      </button>
-
+      <div class="ms-auto">
+        <ul class="list-unstyled mb-0 d-flex align-items-center gap-3">
+          <li class="pc-h-item text-muted">
+            <i class="ti ti-calendar me-1"></i>
+            <span id="currentDate">-</span>
+          </li>
+          <li class="pc-h-item text-muted">
+            <i class="ti ti-clock me-1"></i>
+            <span id="currentTime">-</span>
+          </li>
+        </ul>
+      </div>
     </div>
-
-
-    <div class="header-date">
-
-      <i class="ti ti-calendar me-1"></i>
-
-      <span id="currentDate">
-        -
-      </span>
-
-      <span class="mx-2">
-        |
-      </span>
-
-      <i class="ti ti-clock me-1"></i>
-
-      <span id="currentTime">
-        -
-      </span>
-
-    </div>
-
-
   </header>
 
+  <!-- =========================================================
+       MAIN CONTENT
+  ========================================================== -->
+  <div class="pc-container">
+    <div class="pc-content">
 
+      <!-- JUDUL HALAMAN -->
+      <div class="row mb-3">
+        <div class="col-12">
+          <h4 class="mb-1" id="welcomeTitle">Selamat Datang!</h4>
+          <p class="text-muted mb-0">Berikut adalah kondisi ruangan PS Rental hari ini.</p>
+        </div>
+      </div>
 
-  <!-- ===================================================
-       CONTENT
-  ==================================================== -->
+      <!-- KARTU STATISTIK -->
+      <div class="row mb-3">
 
-  <div class="content">
+        <!-- Total Ruangan -->
+        <div class="col-sm-6 col-xl-3 mb-3">
+          <div class="card border-0 shadow-sm stat-box mb-0">
+            <div class="card-body">
+              <div class="d-flex align-items-center">
+                <div class="stat-icon bg-light-primary text-primary me-3">
+                  <i class="ti ti-device-gamepad"></i>
+                </div>
+                <div>
+                  <h6 class="text-muted mb-1 fs-6">Total Ruangan</h6>
+                  <h4 class="mb-0 fw-bold" id="statTotal">0</h4>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
+        <!-- Sedang Digunakan -->
+        <div class="col-sm-6 col-xl-3 mb-3">
+          <div class="card border-0 shadow-sm stat-box mb-0">
+            <div class="card-body">
+              <div class="d-flex align-items-center">
+                <div class="stat-icon bg-light-danger text-danger me-3">
+                  <i class="ti ti-player-play"></i>
+                </div>
+                <div>
+                  <h6 class="text-muted mb-1 fs-6">Sedang Digunakan</h6>
+                  <h4 class="mb-0 fw-bold" id="statDigunakan">0</h4>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-    <!-- WELCOME -->
+        <!-- Booking -->
+        <div class="col-sm-6 col-xl-3 mb-3">
+          <div class="card border-0 shadow-sm stat-box mb-0">
+            <div class="card-body">
+              <div class="d-flex align-items-center">
+                <div class="stat-icon bg-light-warning text-warning me-3">
+                  <i class="ti ti-calendar-event"></i>
+                </div>
+                <div>
+                  <h6 class="text-muted mb-1 fs-6">Booking</h6>
+                  <h4 class="mb-0 fw-bold" id="statBooking">0</h4>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-    <div class="mb-4">
+        <!-- Kosong -->
+        <div class="col-sm-6 col-xl-3 mb-3">
+          <div class="card border-0 shadow-sm stat-box mb-0">
+            <div class="card-body">
+              <div class="d-flex align-items-center">
+                <div class="stat-icon bg-light-success text-success me-3">
+                  <i class="ti ti-circle-check"></i>
+                </div>
+                <div>
+                  <h6 class="text-muted mb-1 fs-6">Kosong</h6>
+                  <h4 class="mb-0 fw-bold" id="statKosong">0</h4>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-      <h4
-        class="welcome-title"
-        id="welcomeTitle">
+      </div>
 
-        Selamat Datang!
+      <!-- STATUS RUANGAN + BOOKING -->
+      <div class="row">
 
-      </h4>
+        <!-- STATUS RUANGAN -->
+        <div class="col-xl-9">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="mb-0">Status Ruangan</h5>
+            </div>
+            <div class="card-body">
+              <div class="row g-3" id="daftarRuangan">
+                <div class="col-12 text-center text-muted py-4">Memuat data...</div>
+              </div>
+            </div>
+          </div>
+        </div>
 
+        <!-- BOOKING HARI INI -->
+        <div class="col-xl-3">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="mb-0">Booking Hari Ini</h5>
+            </div>
+            <div class="card-body" id="daftarBooking">
+              <div class="text-center text-muted py-4">
+                <i class="ti ti-calendar-off fs-2 d-block mb-2"></i>
+                Belum ada booking
+              </div>
+            </div>
+          </div>
+        </div>
 
-      <p class="welcome-text mb-0">
-
-        Berikut adalah kondisi ruangan PS Rental hari ini.
-
-      </p>
+      </div>
 
     </div>
-
-
-
-    <!-- =================================================
-         STATISTIK
-    ================================================== -->
-
-    <div class="row g-3 mb-4">
-
-
-      <!-- TOTAL -->
-
-      <div class="col-md-6 col-xl-3">
-
-        <div class="stat-card">
-
-          <div
-            class="d-flex justify-content-between align-items-center">
-
-            <div>
-
-              <div class="stat-label">
-                Total Ruangan
-              </div>
-
-              <h3 class="stat-number">
-                5
-              </h3>
-
-            </div>
-
-
-            <div class="stat-icon icon-blue">
-
-              <i class="ti ti-device-gamepad"></i>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
-
-
-
-      <!-- DIGUNAKAN -->
-
-      <div class="col-md-6 col-xl-3">
-
-        <div class="stat-card">
-
-          <div
-            class="d-flex justify-content-between align-items-center">
-
-            <div>
-
-              <div class="stat-label">
-                Sedang Digunakan
-              </div>
-
-              <h3 class="stat-number text-danger">
-                2
-              </h3>
-
-            </div>
-
-
-            <div class="stat-icon icon-red">
-
-              <i class="ti ti-player-play"></i>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
-
-
-
-      <!-- BOOKING -->
-
-      <div class="col-md-6 col-xl-3">
-
-        <div class="stat-card">
-
-          <div
-            class="d-flex justify-content-between align-items-center">
-
-            <div>
-
-              <div class="stat-label">
-                Booking
-              </div>
-
-              <h3 class="stat-number text-warning">
-                1
-              </h3>
-
-            </div>
-
-
-            <div class="stat-icon icon-yellow">
-
-              <i class="ti ti-calendar-event"></i>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
-
-
-
-      <!-- KOSONG -->
-
-      <div class="col-md-6 col-xl-3">
-
-        <div class="stat-card">
-
-          <div
-            class="d-flex justify-content-between align-items-center">
-
-            <div>
-
-              <div class="stat-label">
-                Kosong
-              </div>
-
-              <h3 class="stat-number text-success">
-                2
-              </h3>
-
-            </div>
-
-
-            <div class="stat-icon icon-green">
-
-              <i class="ti ti-circle-check"></i>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
-
-
-    </div>
-
-
-
-    <!-- =================================================
-         STATUS RUANGAN + BOOKING
-    ================================================== -->
-
-    <div class="row g-4">
-
-
-      <!-- =================================================
-           STATUS RUANGAN
-      ================================================== -->
-
-      <div class="col-xl-9">
-
-
-        <div class="card border-0 shadow-sm">
-
-          <div class="card-header bg-white py-3">
-
-            <h5 class="mb-0">
-
-              Status Ruangan
-
-            </h5>
-
-          </div>
-
-
-          <div class="card-body">
-
-
-            <div class="row g-3">
-
-
-              <!-- PS ROOM 1 -->
-
-              <div class="col-md-6 col-xl-4">
-
-                <div class="room-card">
-
-                  <div class="room-card-body">
-
-
-                    <div
-                      class="d-flex justify-content-between align-items-start">
-
-
-                      <h6 class="room-title">
-
-                        <i
-                          class="ti ti-device-gamepad-2 room-icon">
-                        </i>
-
-                        PS Room 1
-
-                      </h6>
-
-
-                      <span
-                        class="badge text-bg-danger">
-
-                        Digunakan
-
-                      </span>
-
-
-                    </div>
-
-
-                    <div class="room-info mt-3">
-
-                      Customer : Andi
-
-                    </div>
-
-
-                    <div class="room-info">
-
-                      Mulai : 09:00
-
-                    </div>
-
-
-                    <div class="room-info">
-
-                      Selesai : 11:00
-
-                    </div>
-
-
-                    <div class="timer-box">
-
-                      <i class="ti ti-clock me-1"></i>
-
-                      00:36:12
-
-                    </div>
-
-
-                  </div>
-
-                </div>
-
-              </div>
-
-
-
-              <!-- PS ROOM 2 -->
-
-              <div class="col-md-6 col-xl-4">
-
-                <div class="room-card">
-
-                  <div class="room-card-body">
-
-
-                    <div
-                      class="d-flex justify-content-between align-items-start">
-
-
-                      <h6 class="room-title">
-
-                        <i
-                          class="ti ti-device-gamepad-2 room-icon">
-                        </i>
-
-                        PS Room 2
-
-                      </h6>
-
-
-                      <span
-                        class="badge text-bg-success">
-
-                        Kosong
-
-                      </span>
-
-
-                    </div>
-
-
-                    <div class="room-info mt-3">
-
-                      Jadwal berikutnya : 13:00
-
-                    </div>
-
-
-                    <div
-                      class="text-center text-muted py-3">
-
-                      <i
-                        class="ti ti-device-gamepad-2 fs-2">
-                      </i>
-
-                    </div>
-
-
-                  </div>
-
-                </div>
-
-              </div>
-
-
-
-              <!-- PS ROOM 3 -->
-
-              <div class="col-md-6 col-xl-4">
-
-                <div class="room-card">
-
-                  <div class="room-card-body">
-
-
-                    <div
-                      class="d-flex justify-content-between align-items-start">
-
-
-                      <h6 class="room-title">
-
-                        <i
-                          class="ti ti-device-gamepad-2 room-icon">
-                        </i>
-
-                        PS Room 3
-
-                      </h6>
-
-
-                      <span
-                        class="badge text-bg-success">
-
-                        Kosong
-
-                      </span>
-
-
-                    </div>
-
-
-                    <div class="room-info mt-3">
-
-                      Jadwal berikutnya : -
-
-                    </div>
-
-
-                    <div
-                      class="text-center text-muted py-3">
-
-                      <i
-                        class="ti ti-device-gamepad-2 fs-2">
-                      </i>
-
-                    </div>
-
-
-                  </div>
-
-                </div>
-
-              </div>
-
-
-
-              <!-- VIP ROOM 1 -->
-
-              <div class="col-md-6 col-xl-4">
-
-                <div class="room-card">
-
-                  <div class="room-card-body">
-
-
-                    <div
-                      class="d-flex justify-content-between align-items-start">
-
-
-                      <h6 class="room-title">
-
-                        <i
-                          class="ti ti-device-gamepad-2 room-icon">
-                        </i>
-
-                        VIP Room 1
-
-                      </h6>
-
-
-                      <span
-                        class="badge text-bg-warning">
-
-                        Booking
-
-                      </span>
-
-
-                    </div>
-
-
-                    <div class="room-info mt-3">
-
-                      Customer : Budi
-
-                    </div>
-
-
-                    <div class="room-info">
-
-                      Jam : 19:00 - 22:00
-
-                    </div>
-
-
-                    <div
-                      class="text-center text-warning py-3">
-
-                      <i
-                        class="ti ti-calendar-event fs-2">
-                      </i>
-
-                    </div>
-
-
-                  </div>
-
-                </div>
-
-              </div>
-
-
-
-              <!-- VIP ROOM 2 -->
-
-              <div class="col-md-6 col-xl-4">
-
-                <div class="room-card">
-
-                  <div class="room-card-body">
-
-
-                    <div
-                      class="d-flex justify-content-between align-items-start">
-
-
-                      <h6 class="room-title">
-
-                        <i
-                          class="ti ti-device-gamepad-2 room-icon">
-                        </i>
-
-                        VIP Room 2
-
-                      </h6>
-
-
-                      <span
-                        class="badge text-bg-success">
-
-                        Kosong
-
-                      </span>
-
-
-                    </div>
-
-
-                    <div class="room-info mt-3">
-
-                      Jadwal berikutnya : -
-
-                    </div>
-
-
-                    <div
-                      class="text-center text-muted py-3">
-
-                      <i
-                        class="ti ti-device-gamepad-2 fs-2">
-                      </i>
-
-                    </div>
-
-
-                  </div>
-
-                </div>
-
-              </div>
-
-
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
-
-
-
-      <!-- =================================================
-           BOOKING HARI INI
-      ================================================== -->
-
-      <div class="col-xl-3">
-
-
-        <div class="card border-0 shadow-sm">
-
-          <div class="card-header bg-white py-3">
-
-            <h5 class="mb-0">
-
-              Booking Hari Ini
-
-            </h5>
-
-          </div>
-
-
-          <div class="card-body">
-
-
-            <!-- BOOKING 1 -->
-
-            <div class="booking-item">
-
-
-              <div>
-
-                <div class="booking-time">
-
-                  11:00
-
-                </div>
-
-
-                <div class="booking-customer">
-
-                  Rudi
-
-                </div>
-
-              </div>
-
-
-              <span
-                class="badge text-bg-primary">
-
-                PS Room 3
-
-              </span>
-
-
-            </div>
-
-
-
-            <!-- BOOKING 2 -->
-
-            <div class="booking-item">
-
-
-              <div>
-
-                <div class="booking-time">
-
-                  19:00
-
-                </div>
-
-
-                <div class="booking-customer">
-
-                  Budi
-
-                </div>
-
-              </div>
-
-
-              <span
-                class="badge text-bg-warning">
-
-                VIP Room 1
-
-              </span>
-
-
-            </div>
-
-
-          </div>
-
-        </div>
-
-
-      </div>
-
-
-    </div>
-
-
   </div>
 
-</main>
+  <!-- =========================================================
+       POPUP KONFIRMASI LOGOUT
+  ========================================================== -->
+  <div class="lg-overlay" id="logoutModal" aria-hidden="true">
+    <div class="lg-box" role="dialog" aria-modal="true">
 
+      <div class="lg-icon"><i class="ti ti-logout"></i></div>
 
+      <p class="lg-text">Apakah Anda yakin ingin logout?</p>
 
-<!-- =====================================================
-     DITAMBAHKAN: POPUP KONFIRMASI LOGOUT (TENGAH HALAMAN)
-====================================================== -->
-
-<div
-  class="modal fade"
-  id="logoutModal"
-  tabindex="-1"
-  aria-labelledby="logoutModalTitle"
-  aria-hidden="true">
-
-  <div class="modal-dialog modal-dialog-centered modal-sm">
-
-    <div class="modal-content">
-
-      <div class="modal-body pb-0">
-
-        <div class="logout-modal-icon">
-
-          <i class="ti ti-logout"></i>
-
-        </div>
-
-        
-
-        <p class="logout-modal-text">
-
-          Apakah Anda yakin ingin logout? 
-
-        </p>
-
-      </div>
-
-      <div class="logout-modal-actions">
-
-        <button
-          type="button"
-          class="btn btn-logout-cancel"
-          data-bs-dismiss="modal">
-
-          Tidak
-
-        </button>
-
-        <button
-          type="button"
-          class="btn btn-logout-confirm"
-          id="confirmLogoutBtn">
-
-          Ya
-
-        </button>
-
+      <div class="lg-actions">
+        <button type="button" class="btn btn-logout-cancel" id="cancelLogoutBtn">Tidak</button>
+        <button type="button" class="btn btn-logout-confirm" id="confirmLogoutBtn">Ya</button>
       </div>
 
     </div>
-
   </div>
 
-</div>
-
-
-
-<!-- =====================================================
-     BOOTSTRAP JAVASCRIPT
-====================================================== -->
-
-<script
-  src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
-</script>
-
-
-
-<!-- =====================================================
-     PS RENTAL JAVASCRIPT
-====================================================== -->
-
-<script>
-
-
-  /* =====================================================
-     CEK LOGIN
-  ====================================================== */
-
-  const role =
-    localStorage.getItem("role");
-
-  const username =
-    localStorage.getItem("username");
-
-
-  /*
-   * Jika belum login,
-   * kembali ke halaman login.
-   */
-
-  if (!role || !username) {
-
-    window.location.href =
-      "/logout";
-
-  }
-
-
-  /* =====================================================
-     ELEMENT
-  ====================================================== */
-
-  const sidebarUsername =
-    document.getElementById(
-      "sidebarUsername"
-    );
-
-
-  const sidebarRole =
-    document.getElementById(
-      "sidebarRole"
-    );
-
-
-  const welcomeTitle =
-    document.getElementById(
-      "welcomeTitle"
-    );
-
-
-  /* =====================================================
-     ROLE
-  ====================================================== */
-
-  let roleName = "";
-
-
-  if (role === "superadmin") {
-
-    roleName = "Superadmin";
-
-  }
-
-  else if (role === "kasir") {
-
-    roleName = "Kasir";
-
-  }
-
-  else {
-
-    localStorage.removeItem("role");
-
-    localStorage.removeItem("username");
-
-    window.location.href =
-      "/logout";
-
-  }
-
-
-  /* =====================================================
-     USERNAME
-  ====================================================== */
-
-  sidebarUsername.textContent =
-    username;
-
-
-  sidebarRole.textContent =
-    roleName;
-
-
-  /* =====================================================
-     WELCOME
-  ====================================================== */
-
-  welcomeTitle.textContent =
-    "Selamat Datang, " +
-    roleName +
-    "!";
-
-
-  /* =====================================================
-     ROLE MENU
-  ====================================================== */
-
-  const menuKasir =
-    document.querySelectorAll(
-      ".menu-kasir"
-    );
-
-
-  const menuSuperadmin =
-    document.querySelectorAll(
-      ".menu-superadmin"
-    );
-
-
-  if (role === "kasir") {
-
-
-    menuKasir.forEach(function(menu) {
-
-      menu.style.display = "";
-
-    });
-
-
-    menuSuperadmin.forEach(function(menu) {
-
-      menu.style.display = "none";
-
-    });
-
-
-  }
-
-
-  else if (role === "superadmin") {
-
-
-    menuSuperadmin.forEach(function(menu) {
-
-      menu.style.display = "";
-
-    });
-
-
-    menuKasir.forEach(function(menu) {
-
-      menu.style.display = "none";
-
-    });
-
-
-  }
-
-
-  /* =====================================================
-     TANGGAL
-  ====================================================== */
-
-  function updateDateTime() {
-
-
-    const now =
-      new Date();
-
-
-    const dateText =
-      now.toLocaleDateString(
-        "id-ID",
-        {
+  <!-- =========================================================
+       JAVASCRIPT TEMPLATE
+  ========================================================== -->
+  <script src="{{ asset('assets/js/plugins/popper.min.js') }}"></script>
+  <script src="{{ asset('assets/js/plugins/simplebar.min.js') }}"></script>
+  <script src="{{ asset('assets/js/plugins/bootstrap.min.js') }}"></script>
+  <script src="{{ asset('assets/js/script.js') }}"></script>
+  <script src="{{ asset('assets/js/theme.js') }}"></script>
+  <script src="{{ asset('assets/js/plugins/feather.min.js') }}"></script>
+
+  <!-- =========================================================
+       SCRIPT DASHBOARD
+  ========================================================== -->
+  <script>
+
+    /* CEK LOGIN */
+    const role = localStorage.getItem("role");
+    const username = localStorage.getItem("username");
+
+    if (!role || !username) {
+      window.location.href = "/logout";
+    }
+
+    /* ROLE */
+    let roleName = "";
+
+    if (role === "superadmin") {
+      roleName = "Superadmin";
+    }
+    else if (role === "kasir") {
+      roleName = "Kasir";
+    }
+    else {
+      localStorage.removeItem("role");
+      localStorage.removeItem("username");
+      window.location.href = "/logout";
+    }
+
+    document.getElementById("sidebarUsername").textContent = username;
+    document.getElementById("sidebarRole").textContent = roleName;
+    document.getElementById("welcomeTitle").textContent = "Selamat Datang, " + roleName + "!";
+
+    /* ROLE MENU */
+    const menuKasir = document.querySelectorAll(".menu-kasir");
+    const menuSuperadmin = document.querySelectorAll(".menu-superadmin");
+
+    if (role === "kasir") {
+      menuKasir.forEach(function (m) { m.style.display = ""; });
+      menuSuperadmin.forEach(function (m) { m.style.display = "none"; });
+    }
+    else if (role === "superadmin") {
+      menuSuperadmin.forEach(function (m) { m.style.display = ""; });
+      menuKasir.forEach(function (m) { m.style.display = "none"; });
+    }
+
+    /* TANGGAL & JAM */
+    function updateDateTime() {
+
+      const now = new Date();
+
+      document.getElementById("currentDate").textContent =
+        now.toLocaleDateString("id-ID", {
           weekday: "long",
           year: "numeric",
           month: "long",
           day: "numeric"
-        }
-      );
+        });
 
-
-    document.getElementById(
-      "currentDate"
-    ).textContent =
-      dateText;
-
-
-    const timeText =
-      now.toLocaleTimeString(
-        "id-ID",
-        {
+      document.getElementById("currentTime").textContent =
+        now.toLocaleTimeString("id-ID", {
           hour: "2-digit",
           minute: "2-digit",
           second: "2-digit"
-        }
-      );
-
-
-    document.getElementById(
-      "currentTime"
-    ).textContent =
-      timeText;
-
-  }
-
-
-  updateDateTime();
-
-
-  setInterval(
-    updateDateTime,
-    1000
-  );
-
-
-  /* =====================================================
-     LOGOUT
-  ====================================================== */
-
-  /*
-   * DIUBAH: confirm() bawaan browser diganti popup di tengah halaman.
-   * Isi proses logout (hapus role & username, lalu ke /logout) TIDAK berubah,
-   * hanya dipindah ke tombol "Ya, Logout" pada popup.
-   */
-
-  function logout() {
-
-
-    const logoutModalElement =
-      document.getElementById(
-        "logoutModal"
-      );
-
-
-    const logoutModal =
-      bootstrap.Modal.getOrCreateInstance(
-        logoutModalElement
-      );
-
-
-    logoutModal.show();
-
-  }
-
-
-  document.getElementById(
-    "confirmLogoutBtn"
-  ).addEventListener(
-    "click",
-    function () {
-
-
-      localStorage.removeItem(
-        "role"
-      );
-
-
-      localStorage.removeItem(
-        "username"
-      );
-
-
-      window.location.href =
-        "/logout";
+        });
 
     }
-  );
+
+    updateDateTime();
+    setInterval(updateDateTime, 1000);
 
 
   /* =====================================================
-     DITAMBAHKAN: TOGGLE SIDEBAR (HAMBURGER)
+     DATA RUANGAN DARI DATABASE
   ====================================================== */
 
-  const sidebar =
-    document.getElementById(
-      "sidebar"
-    );
+  // Cegah teks dari database dibaca sebagai HTML
+  function esc(teks) {
+    const div = document.createElement("div");
+    div.textContent = teks == null ? "" : String(teks);
+    return div.innerHTML;
+  }
 
+  function nilai(teks) {
+    return (teks === null || teks === undefined || teks === "") ? "-" : esc(teks);
+  }
 
-  const menuToggle =
-    document.getElementById(
-      "menuToggle"
-    );
+  /*
+   * Field tambahan yang dibaca dari /ruangan/data (opsional):
+   *   customer, jam_mulai, jam_selesai,
+   *   jadwal_berikutnya,
+   *   booking: { customer: "...", jam: "19:00 - 22:00" }
+   * Kalau belum ada, tampil "-".
+   */
+  function kartuRuangan(r) {
 
+    const judul =
+      '<h6 class="room-title">' +
+        '<i class="ti ti-device-gamepad-2 room-icon"></i>' + esc(r.nama_ruangan) +
+      '</h6>';
 
-  if (menuToggle) {
+    let badge = "";
+    let isi = "";
 
-    menuToggle.addEventListener(
-      "click",
-      function () {
+    // ---------- DIGUNAKAN ----------
+    if (r.status_ruangan === "Digunakan") {
 
-        if (window.innerWidth >= 992) {
+      badge = '<span class="badge text-bg-danger">Digunakan</span>';
 
-          // Desktop: sembunyikan / tampilkan sidebar
-          document.body.classList.toggle(
-            "sidebar-hidden"
-          );
+      isi =
+        '<div class="room-info mt-3">Customer : ' + nilai(r.customer) + '</div>' +
+        '<div class="room-info">Mulai : ' + nilai(r.jam_mulai) + '</div>' +
+        '<div class="room-info">Selesai : ' + nilai(r.jam_selesai) + '</div>';
+    }
 
-        }
+    // ---------- MAINTENANCE ----------
+    else if (r.status_ruangan === "Maintenance") {
 
-        else {
+      badge = '<span class="badge text-bg-secondary">Maintenance</span>';
 
-          // Mobile: buka / tutup sidebar
-          sidebar.classList.toggle(
-            "show"
-          );
+      isi =
+        '<div class="room-info mt-3">Sedang dalam perbaikan</div>' +
+        '<div class="text-center text-muted py-3"><i class="ti ti-tool fs-2"></i></div>';
+    }
 
-        }
+    // ---------- BOOKING (tersedia tapi sudah ada booking) ----------
+    else if (r.booking) {
 
+      badge = '<span class="badge text-bg-warning">Booking</span>';
+
+      isi =
+        '<div class="room-info mt-3">Customer : ' + nilai(r.booking.customer) + '</div>' +
+        '<div class="room-info">Jam : ' + nilai(r.booking.jam) + '</div>' +
+        '<div class="text-center text-warning py-3"><i class="ti ti-calendar-event fs-2"></i></div>';
+    }
+
+    // ---------- KOSONG ----------
+    else {
+
+      badge = '<span class="badge text-bg-success">Kosong</span>';
+
+      isi =
+        '<div class="room-info mt-3">Jadwal berikutnya : ' + nilai(r.jadwal_berikutnya) + '</div>' +
+        '<div class="text-center text-muted py-3"><i class="ti ti-device-gamepad-2 fs-2"></i></div>';
+    }
+
+    return '' +
+      '<div class="col-md-6 col-xl-4">' +
+        '<div class="room-card">' +
+          '<div class="d-flex justify-content-between align-items-start">' +
+            judul + badge +
+          '</div>' +
+          isi +
+        '</div>' +
+      '</div>';
+  }
+
+  function itemBooking(r) {
+    return '' +
+      '<div class="booking-item">' +
+        '<div>' +
+          '<div class="booking-time">' + nilai(r.booking.jam) + '</div>' +
+          '<div class="booking-customer">' + nilai(r.booking.customer) + '</div>' +
+        '</div>' +
+        '<span class="badge text-bg-warning">' + esc(r.nama_ruangan) + '</span>' +
+      '</div>';
+  }
+
+  async function loadDashboard() {
+
+    const daftar = document.getElementById("daftarRuangan");
+    const daftarBooking = document.getElementById("daftarBooking");
+
+    try {
+
+      const response = await fetch("/ruangan/data", {
+        method: "GET",
+        headers: { "Accept": "application/json" }
+      });
+
+      if (response.status === 401) {
+        window.location.href = "/logout";
+        return;
       }
-    );
+
+      if (!response.ok) {
+        daftar.innerHTML = '<div class="col-12 text-center text-danger py-4">Gagal memuat data ruangan.</div>';
+        return;
+      }
+
+      const rooms = await response.json();
+
+      // Statistik
+      const digunakan = rooms.filter(function (r) {
+        return r.status_ruangan === "Digunakan";
+      }).length;
+
+      const dibooking = rooms.filter(function (r) {
+        return r.status_ruangan === "Tersedia" && r.booking;
+      });
+
+      const kosong = rooms.filter(function (r) {
+        return r.status_ruangan === "Tersedia" && !r.booking;
+      }).length;
+
+      document.getElementById("statTotal").textContent = rooms.length;
+      document.getElementById("statDigunakan").textContent = digunakan;
+      document.getElementById("statBooking").textContent = dibooking.length;
+      document.getElementById("statKosong").textContent = kosong;
+
+      // Kartu ruangan
+      if (rooms.length === 0) {
+        daftar.innerHTML = '<div class="col-12 text-center text-muted py-4">Belum ada data ruangan.</div>';
+      } else {
+        daftar.innerHTML = rooms.map(kartuRuangan).join("");
+      }
+
+      // Booking hari ini
+      const adaBooking = rooms.filter(function (r) { return r.booking; });
+
+      if (adaBooking.length === 0) {
+        daftarBooking.innerHTML =
+          '<div class="text-center text-muted py-4">' +
+            '<i class="ti ti-calendar-off fs-2 d-block mb-2"></i>Belum ada booking' +
+          '</div>';
+      } else {
+        daftarBooking.innerHTML = adaBooking.map(itemBooking).join("");
+      }
+
+    } catch (e) {
+      daftar.innerHTML = '<div class="col-12 text-center text-danger py-4">Tidak dapat terhubung ke server.</div>';
+    }
 
   }
 
+  loadDashboard();
+  setInterval(loadDashboard, 30000); // perbarui otomatis tiap 30 detik
 
-</script>
+    /* =====================================================
+       LOGOUT (popup di tengah halaman)
+    ====================================================== */
 
+    const logoutModal = document.getElementById("logoutModal");
+
+    function logout() {
+      logoutModal.classList.add("show");
+      logoutModal.setAttribute("aria-hidden", "false");
+    }
+
+    function tutupModalLogout() {
+      logoutModal.classList.remove("show");
+      logoutModal.setAttribute("aria-hidden", "true");
+    }
+
+    document.getElementById("cancelLogoutBtn").addEventListener("click", tutupModalLogout);
+
+    logoutModal.addEventListener("click", function (e) {
+      if (e.target === logoutModal) tutupModalLogout();
+    });
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") tutupModalLogout();
+    });
+
+    document.getElementById("confirmLogoutBtn").addEventListener("click", function () {
+      localStorage.removeItem("role");
+      localStorage.removeItem("username");
+      window.location.href = "/logout";
+    });
+
+  </script>
 
 </body>
 
