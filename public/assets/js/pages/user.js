@@ -283,29 +283,125 @@ async function handleUserSubmit(e) {
 }
 
 /* ---------------------------------------------------------
+   Pop up (desain sama dengan pop up logout)
+   Dibuat langsung di sini, tidak bergantung file lain
+--------------------------------------------------------- */
+
+function pasangStylePopup() {
+  if (document.getElementById("popupStyleUser")) return;
+
+  const style = document.createElement("style");
+  style.id = "popupStyleUser";
+  style.textContent =
+    ".up-overlay{position:fixed;top:0;right:0;bottom:0;left:0;z-index:2000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.5);opacity:0;visibility:hidden;transition:opacity .25s ease,visibility .25s ease}" +
+    ".up-overlay.show{opacity:1;visibility:visible}" +
+    ".up-box{width:100%;max-width:320px;background:#fff;border-radius:22px;padding:12px 8px 8px;text-align:center;box-shadow:0 25px 60px rgba(15,23,42,.25);transform:scale(.85) translateY(20px);transition:transform .25s ease}" +
+    ".up-overlay.show .up-box{transform:scale(1) translateY(0)}" +
+    ".up-icon{width:76px;height:76px;margin:18px auto;border-radius:50%;background:#fde8e8;color:#dc3545;display:flex;align-items:center;justify-content:center;font-size:36px;box-shadow:0 0 0 10px #fff4f4}" +
+    ".up-title{font-size:17px;font-weight:700;color:#212529;margin:0 16px 8px}" +
+    ".up-text{color:#6c757d;font-size:14px;margin:0;padding:0 16px}" +
+    ".up-actions{display:flex;gap:12px;padding:22px 16px 14px}" +
+    ".up-btn{flex:1;padding:12px;border-radius:12px;font-weight:600;font-size:14px;cursor:pointer;font-family:inherit}" +
+    ".up-btn-cancel{background:#f1f5f9;border:1px solid #e5e7eb;color:#475569}" +
+    ".up-btn-cancel:hover{background:#e2e8f0;color:#1e293b}" +
+    ".up-btn-ok{background:#dc3545;border:1px solid #dc3545;color:#fff}" +
+    ".up-btn-ok:hover{background:#bb2d3b;border-color:#bb2d3b}";
+  document.head.appendChild(style);
+}
+
+// opsi: { ikon, judul, pesan, teksYa, teksTidak, onYa }
+// Kalau teksTidak dikosongkan, hanya ada satu tombol (untuk pemberitahuan)
+function tampilPopup(opsi) {
+  pasangStylePopup();
+
+  const overlay = document.createElement("div");
+  overlay.className = "up-overlay";
+
+  overlay.innerHTML =
+    '<div class="up-box" role="dialog" aria-modal="true">' +
+      '<div class="up-icon"><i class="ti ' + (opsi.ikon || "ti-alert-circle") + '"></i></div>' +
+      (opsi.judul ? '<p class="up-title">' + esc(opsi.judul) + '</p>' : '') +
+      '<p class="up-text">' + esc(opsi.pesan) + '</p>' +
+      '<div class="up-actions">' +
+        (opsi.teksTidak ? '<button type="button" class="up-btn up-btn-cancel" data-aksi="tidak">' + esc(opsi.teksTidak) + '</button>' : '') +
+        '<button type="button" class="up-btn up-btn-ok" data-aksi="ya">' + esc(opsi.teksYa || "Oke") + '</button>' +
+      '</div>' +
+    '</div>';
+
+  document.body.appendChild(overlay);
+
+  function tutup() {
+    document.removeEventListener("keydown", saatTekan);
+    overlay.classList.remove("show");
+    setTimeout(function () { overlay.remove(); }, 250);
+  }
+
+  function saatTekan(e) {
+    if (e.key === "Escape") tutup();
+  }
+
+  overlay.addEventListener("click", function (e) {
+    if (e.target === overlay) tutup();
+  });
+
+  overlay.querySelector('[data-aksi="ya"]').addEventListener("click", function () {
+    tutup();
+    if (typeof opsi.onYa === "function") opsi.onYa();
+  });
+
+  const tombolTidak = overlay.querySelector('[data-aksi="tidak"]');
+  if (tombolTidak) tombolTidak.addEventListener("click", tutup);
+
+  document.addEventListener("keydown", saatTekan);
+
+  // jalankan animasi masuk
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () { overlay.classList.add("show"); });
+  });
+}
+
+/* ---------------------------------------------------------
    Hapus
 --------------------------------------------------------- */
 
-async function deleteUser(id) {
-  const u = allUsers.find(function (x) { return Number(x.id_user) === Number(id); });
-  if (!u) return;
-
-  if (!confirm("Hapus akun " + u.username + "?\n\nAkun yang sudah punya data booking tidak bisa dihapus. Untuk kasir yang sudah tidak bekerja, sebaiknya ubah statusnya menjadi Nonaktif.")) {
-    return;
-  }
-
+// Proses hapus ke server
+async function hapusUser(id) {
   try {
     const res = await api("/user/" + id, "DELETE");
 
     if (!res.ok) {
-      alert(pesanError(res.data));
+      tampilPopup({
+        ikon: "ti-alert-circle",
+        judul: "Gagal Menghapus",
+        pesan: pesanError(res.data),
+        teksYa: "Oke"
+      });
       return;
     }
 
     await loadUsers();
   } catch (err) {
-    alert("Tidak dapat terhubung ke server.");
+    tampilPopup({
+      ikon: "ti-wifi-off",
+      judul: "Gagal Terhubung",
+      pesan: "Tidak dapat terhubung ke server.",
+      teksYa: "Oke"
+    });
   }
+}
+
+// Konfirmasi hapus
+function deleteUser(id) {
+  const u = allUsers.find(function (x) { return Number(x.id_user) === Number(id); });
+  if (!u) return;
+
+  tampilPopup({
+    ikon: "ti-trash",
+    pesan: "Apakah Anda yakin ingin menghapus akun " + u.username + "?",
+    teksYa: "Ya ",
+    teksTidak: "Tidak",
+    onYa: function () { hapusUser(id); }
+  });
 }
 
 /* ---------------------------------------------------------
