@@ -167,6 +167,23 @@
       border-color: #bb2d3b;
       color: #ffffff;
     }
+    /* ================= DITAMBAHKAN: POPUP KONFIRMASI HAPUS RUANGAN ================= */
+    #hapusModal .modal-content {
+      border: 0;
+      border-radius: 22px;
+      padding: 12px 8px 8px;
+      text-align: center;
+      box-shadow: 0 25px 60px rgba(15, 23, 42, 0.25);
+    }
+
+    #hapusModal.modal.fade .modal-dialog {
+      transform: scale(0.85) translateY(20px);
+      transition: transform 0.25s ease, opacity 0.25s ease;
+    }
+
+    #hapusModal.modal.show .modal-dialog {
+      transform: scale(1) translateY(0);
+    }
   </style>
 </head>
 
@@ -565,6 +582,33 @@
   </div>
 
   <!-- =========================================================
+       DITAMBAHKAN: POPUP KONFIRMASI HAPUS RUANGAN (TENGAH HALAMAN)
+       Memakai gaya yang sama dengan popup logout.
+  ========================================================== -->
+  <div class="modal fade" id="hapusModal" tabindex="-1" aria-label="Konfirmasi hapus ruangan" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content">
+
+        <div class="modal-body pb-0">
+          <div class="logout-modal-icon">
+            <i class="ti ti-trash"></i>
+          </div>
+
+          <p class="logout-modal-text" id="hapusModalText">
+            Apakah Anda yakin ingin menghapus ruangan ini?
+          </p>
+        </div>
+
+        <div class="logout-modal-actions">
+          <button type="button" class="btn btn-logout-cancel" data-bs-dismiss="modal">Tidak</button>
+          <button type="button" class="btn btn-logout-confirm" id="confirmHapusBtn">Ya</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
        JAVASCRIPT
   ========================================================== -->
   <script src="{{ asset('assets/js/plugins/popper.min.js') }}"></script>
@@ -628,6 +672,67 @@
 
           window.confirm = confirmAsli;
 
+        }
+
+      });
+
+    })();
+  </script>
+
+  <!-- =========================================================
+       DITAMBAHKAN: POPUP KONFIRMASI HAPUS RUANGAN
+       Kode hapus bawaan (di ruanganAdmin.js) TIDAK diubah.
+       confirm() bawaan browser yang berisi kata "hapus" diganti popup.
+       Jika "Ya, Hapus" diklik, klik pada tombol hapus diulang dan kode
+       bawaan berjalan seperti biasa (konfirmasi dianggap sudah disetujui).
+  ========================================================== -->
+  <script>
+    (function () {
+
+      var confirmAsli = window.confirm;
+      var klikTerakhir = null;
+      var lolos = false;
+
+      var elModal = document.getElementById("hapusModal");
+      var elTeks  = document.getElementById("hapusModalText");
+
+      // Catat elemen yang baru saja diklik
+      document.addEventListener("click", function (e) {
+        klikTerakhir = e.target;
+      }, true);
+
+      // Ganti confirm() khusus untuk pesan yang mengandung kata "hapus"
+      window.confirm = function (pesan) {
+
+        if (lolos) return true;
+
+        if (!klikTerakhir || !/hapus/i.test(String(pesan))) {
+          return confirmAsli.call(window, pesan);
+        }
+
+        elTeks.textContent = pesan;
+
+        bootstrap.Modal.getOrCreateInstance(elModal).show();
+
+        return false;
+
+      };
+
+      // Tombol "Ya, Hapus": ulangi klik, kali ini konfirmasi dilewati
+      document.getElementById("confirmHapusBtn").addEventListener("click", function () {
+
+        var target = klikTerakhir;
+
+        bootstrap.Modal.getOrCreateInstance(elModal).hide();
+
+        if (!target || !document.body.contains(target)) return;
+
+        lolos = true;
+
+        try {
+          target.click();
+        } finally {
+          lolos = false;
         }
 
       });
