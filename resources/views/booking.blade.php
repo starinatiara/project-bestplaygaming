@@ -3,6 +3,7 @@
 
 <head>
   <title>Booking Ruangan | PS Rental</title>
+  <meta name="csrf-token" content="{{ csrf_token() }}">
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -283,6 +284,7 @@
 
       <!-- NOTIFIKASI SUKSES -->
       <div id="bookingSuccessAlert" class="alert alert-success d-none py-2 px-3 small rounded-3 mb-3 shadow-sm" role="alert"></div>
+      <div id="bookingErrorAlert" class="alert alert-danger d-none py-2 px-3 small rounded-3 mb-3 shadow-sm" role="alert"></div>
 
       <!-- FORM TAMBAH BOOKING -->
       <div class="row">
@@ -324,12 +326,7 @@
                 <div class="mb-3">
                   <label class="form-label small fw-semibold text-secondary">Pilih Ruangan PS <span class="text-danger">*</span></label>
                   <select id="bookingRoom" class="form-select" required>
-                    <option value="PS Room 1">PS Room 1 (PS5 - Rp 20.000/jam)</option>
-                    <option value="PS Room 2">PS Room 2 (PS5 - Rp 20.000/jam)</option>
-                    <option value="PS Room 3" selected>PS Room 3 (PS4 - Rp 15.000/jam)</option>
-                    <option value="PS Room 4">PS Room 4 (PS4 - Rp 15.000/jam)</option>
-                    <option value="VIP Room 1">VIP Room 1 (PS5 VIP - Rp 30.000/jam)</option>
-                    <option value="VIP Room 2">VIP Room 2 (PS5 VIP - Rp 30.000/jam)</option>
+                    <option value="">Memuat ruangan...</option>
                   </select>
                 </div>
 
@@ -345,6 +342,8 @@
                   </div>
                 </div>
 
+                <div id="jadwalTerisi" class="small text-muted mb-3"></div>
+
                 <!-- Durasi Sewa -->
                 <div class="mb-3">
                   <label class="form-label small fw-semibold text-secondary">Durasi Sewa <span class="text-danger">*</span></label>
@@ -357,26 +356,20 @@
                   </select>
                 </div>
 
-                <!-- Catatan Tambahan -->
-                <div class="mb-3">
-                  <label class="form-label small fw-semibold text-secondary">Catatan (Opsional)</label>
-                  <textarea id="bookingNote" class="form-control" rows="2" placeholder="Contoh: Permintaan tambahan stik, game tertentu..."></textarea>
-                </div>
-
                 <!-- Estimasi Biaya -->
                 <div class="price-box p-3 mb-3">
                   <div class="d-flex justify-content-between align-items-center">
                     <span class="small text-muted fw-semibold">Estimasi Total Biaya:</span>
-                    <strong class="text-primary fs-6" id="estimatedPriceDisplay">Rp 30.000</strong>
+                    <strong class="text-primary fs-6" id="estimatedPriceDisplay">Rp 0</strong>
                   </div>
                 </div>
 
                 <!-- Tombol Aksi -->
                 <div class="d-flex gap-2">
-                  <button type="submit" class="btn btn-primary flex-fill">
+                  <button type="submit" class="btn btn-primary flex-fill" id="btnSimpanBooking">
                     <i class="ti ti-calendar-plus me-1"></i> Simpan Booking
                   </button>
-                  <button type="reset" class="btn btn-light" onclick="setTimeout(updateEstimatedPrice, 100)">
+                  <button type="reset" class="btn btn-light" onclick="setTimeout(resetFormBooking, 100)">
                     Reset
                   </button>
                 </div>
@@ -386,20 +379,6 @@
           </div>
 
         </div>
-      </div>
-
-      <!--
-        Elemen di bawah ini DISEMBUNYIKAN (bukan ditampilkan) karena booking.js
-        masih mencari id-nya. Kalau dihapus total, booking.js bisa error.
-      -->
-      <div class="d-none" aria-hidden="true">
-        <div id="roomAvailabilityList"></div>
-        <span id="badgeTotalBooking"></span>
-        <input type="text" id="searchBooking">
-        <select id="filterStatusBooking">
-          <option value="all">Semua Status</option>
-        </select>
-        <table><tbody id="tabelBooking"></tbody></table>
       </div>
 
     </div>
@@ -420,97 +399,6 @@
         <button type="button" class="btn btn-logout-confirm" id="confirmLogoutBtn">Ya</button>
       </div>
 
-    </div>
-  </div>
-
-  <!-- =========================================================
-       MODAL EDIT BOOKING (tetap ada, dipakai booking.js)
-  ========================================================== -->
-  <div class="modal fade" id="modalEditBooking" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-
-        <div class="modal-header">
-          <h5 class="modal-title fw-bold">
-            <i class="ti ti-edit me-1"></i> Edit Data Booking
-          </h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-
-        <form id="formEditBooking">
-          <input type="hidden" id="editBookingId">
-
-          <div class="modal-body">
-            <div class="row g-3">
-              <div class="col-md-6">
-                <label class="form-label small fw-semibold text-secondary">Nama Pelanggan</label>
-                <input type="text" id="editCustomerName" class="form-control" required>
-              </div>
-
-              <div class="col-md-6">
-                <label class="form-label small fw-semibold text-secondary">Nomor HP</label>
-                <input type="text" id="editCustomerPhone" class="form-control" required>
-              </div>
-
-              <div class="col-md-6">
-                <label class="form-label small fw-semibold text-secondary">Ruangan</label>
-                <select id="editBookingRoom" class="form-select" required>
-                  <option value="PS Room 1">PS Room 1</option>
-                  <option value="PS Room 2">PS Room 2</option>
-                  <option value="PS Room 3">PS Room 3</option>
-                  <option value="PS Room 4">PS Room 4</option>
-                  <option value="VIP Room 1">VIP Room 1</option>
-                  <option value="VIP Room 2">VIP Room 2</option>
-                </select>
-              </div>
-
-              <div class="col-md-6">
-                <label class="form-label small fw-semibold text-secondary">Status</label>
-                <select id="editBookingStatus" class="form-select" required>
-                  <option value="Booking">Booking</option>
-                  <option value="Sedang Main">Sedang Main</option>
-                  <option value="Selesai">Selesai</option>
-                  <option value="Dibatalkan">Dibatalkan</option>
-                </select>
-              </div>
-
-              <div class="col-md-6">
-                <label class="form-label small fw-semibold text-secondary">Tanggal</label>
-                <input type="date" id="editBookingDate" class="form-control" required>
-              </div>
-
-              <div class="col-md-6">
-                <label class="form-label small fw-semibold text-secondary">Jam Mulai</label>
-                <input type="time" id="editBookingTime" class="form-control" required>
-              </div>
-
-              <div class="col-md-6">
-                <label class="form-label small fw-semibold text-secondary">Durasi Sewa</label>
-                <select id="editBookingDuration" class="form-select" required>
-                  <option value="1">1 Jam</option>
-                  <option value="2">2 Jam</option>
-                  <option value="3">3 Jam</option>
-                  <option value="4">4 Jam</option>
-                  <option value="5">5 Jam</option>
-                </select>
-              </div>
-
-              <div class="col-12">
-                <label class="form-label small fw-semibold text-secondary">Catatan</label>
-                <textarea id="editBookingNote" class="form-control" rows="2"></textarea>
-              </div>
-            </div>
-          </div>
-
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-            <button type="submit" class="btn btn-primary">
-              <i class="ti ti-device-floppy me-1"></i> Simpan Perubahan
-            </button>
-          </div>
-        </form>
-
-      </div>
     </div>
   </div>
 

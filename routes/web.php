@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ProfilController;
 use App\Http\Controllers\RuanganController;
 use App\Http\Controllers\UserController;
@@ -26,6 +27,9 @@ Route::middleware('cek.login')->group(function () {
     Route::put('/profil', [ProfilController::class, 'update']);
 
     Route::get('/ruangan/data', [RuanganController::class, 'index']);
+
+    Route::post('/booking', [BookingController::class, 'store']);
+    Route::get('/booking/jadwal', [BookingController::class, 'jadwal']);
 
     // Khusus superadmin
     Route::middleware('cek.role:superadmin')->group(function () {
