@@ -274,31 +274,106 @@
   <div class="pc-container">
     <div class="pc-content">
 
-      <!-- JUDUL HALAMAN -->
+      <!-- JUDUL HALAMAN + TOMBOL TAMBAH BOOKING -->
       <div class="row mb-3">
         <div class="col-12">
-          <h4 class="mb-1">Kelola Booking PlayStation</h4>
-          <p class="text-muted mb-0">Input reservasi sewa ruangan PS, cek ketersediaan konsol, dan kelola jadwal pelanggan kasir.</p>
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+              <h4 class="mb-1">Kelola Booking PlayStation</h4>
+              <p class="text-muted mb-0">Input reservasi sewa ruangan PS, cek ketersediaan konsol, dan kelola jadwal pelanggan kasir.</p>
+            </div>
+            <div>
+              <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalBooking">
+                <i class="ti ti-plus me-1"></i> Tambah Booking
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
       <!-- NOTIFIKASI SUKSES -->
       <div id="bookingSuccessAlert" class="alert alert-success d-none py-2 px-3 small rounded-3 mb-3 shadow-sm" role="alert"></div>
-      <div id="bookingErrorAlert" class="alert alert-danger d-none py-2 px-3 small rounded-3 mb-3 shadow-sm" role="alert"></div>
 
-      <!-- FORM TAMBAH BOOKING -->
+      <!-- RIWAYAT BOOKING + FILTER TANGGAL -->
       <div class="row">
         <div class="col-12">
 
           <div class="card border-0 shadow-sm">
-            <div class="card-header">
+            <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
               <h5 class="mb-0">
-                <i class="ti ti-calendar-plus me-1 text-primary"></i> Tambah Booking Baru
+                <i class="ti ti-list me-1 text-primary"></i> Riwayat Booking
               </h5>
+              <span class="badge bg-light-primary text-primary px-3 py-2" id="badgeTotalRiwayat">0 Booking</span>
             </div>
 
-            <div class="card-body">
-              <form id="formTambahBooking">
+            <!-- Filter tanggal -->
+            <div class="card-body border-bottom py-3">
+              <div class="row g-2 align-items-end">
+                <div class="col-sm-6 col-md-4 col-lg-3">
+                  <label class="form-label small fw-semibold text-secondary">Dari Tanggal</label>
+                  <input type="date" id="filterTanggalDari" class="form-control">
+                </div>
+                <div class="col-sm-6 col-md-4 col-lg-3">
+                  <label class="form-label small fw-semibold text-secondary">Sampai Tanggal</label>
+                  <input type="date" id="filterTanggalSampai" class="form-control">
+                </div>
+                <div class="col-sm-12 col-md-4 col-lg-3">
+                  <button type="button" class="btn btn-light" id="btnResetFilterTanggal">
+                    <i class="ti ti-refresh me-1"></i> Reset Filter
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tabel riwayat -->
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th style="width: 50px;">No</th>
+                    <th>Tanggal</th>
+                    <th>Jam</th>
+                    <th>Pelanggan</th>
+                    <th>Ruangan</th>
+                    <th>Durasi</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="tabelRiwayatBooking">
+                  <!-- Diisi lewat window.setRiwayatBooking(data) -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =========================================================
+       MODAL TAMBAH BOOKING (isi form tidak berubah, hanya dipindah ke modal)
+  ========================================================== -->
+  <div class="modal fade" id="modalBooking" tabindex="-1" aria-labelledby="modalBookingTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold" id="modalBookingTitle">
+            <i class="ti ti-calendar-plus me-1 text-primary"></i> Tambah Booking Baru
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <form id="formTambahBooking">
+
+          <div class="modal-body">
+
+            <!-- NOTIFIKASI ERROR (dipindah ke dalam modal agar terlihat) -->
+            <div id="bookingErrorAlert" class="alert alert-danger d-none py-2 px-3 small rounded-3 mb-3 shadow-sm" role="alert"></div>
+
 
                 <!-- Nama Pelanggan -->
                 <div class="mb-3">
@@ -364,23 +439,21 @@
                   </div>
                 </div>
 
-                <!-- Tombol Aksi -->
-                <div class="d-flex gap-2">
-                  <button type="submit" class="btn btn-primary flex-fill" id="btnSimpanBooking">
-                    <i class="ti ti-calendar-plus me-1"></i> Simpan Booking
-                  </button>
-                  <button type="reset" class="btn btn-light" onclick="setTimeout(resetFormBooking, 100)">
-                    Reset
-                  </button>
-                </div>
-
-              </form>
-            </div>
           </div>
 
-        </div>
-      </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+            <button type="reset" class="btn btn-light" onclick="setTimeout(resetFormBooking, 100)">
+              Reset
+            </button>
+            <button type="submit" class="btn btn-primary" id="btnSimpanBooking">
+              <i class="ti ti-calendar-plus me-1"></i> Simpan Booking
+            </button>
+          </div>
 
+        </form>
+
+      </div>
     </div>
   </div>
 
@@ -468,6 +541,175 @@
       localStorage.removeItem("username");
       window.location.href = "/logout";
     });
+  </script>
+
+  <!-- =========================================================
+       DITAMBAHKAN: RIWAYAT BOOKING, FILTER TANGGAL, TUTUP MODAL OTOMATIS
+       booking.js TIDAK diubah.
+  ========================================================== -->
+  <script>
+    (function () {
+
+      var semuaRiwayat = [];
+
+      var tbody   = document.getElementById("tabelRiwayatBooking");
+      var badge   = document.getElementById("badgeTotalRiwayat");
+      var elDari  = document.getElementById("filterTanggalDari");
+      var elSampai = document.getElementById("filterTanggalSampai");
+
+      function formatRupiah(angka) {
+        return "Rp " + Number(angka || 0).toLocaleString("id-ID");
+      }
+
+      function formatTanggal(iso) {
+        if (!iso) return "-";
+        var p = String(iso).substring(0, 10).split("-");
+        return p.length === 3 ? p[2] + "/" + p[1] + "/" + p[0] : iso;
+      }
+
+      function kelasStatus(status) {
+        switch (status) {
+          case "Booking":     return "bg-warning";
+          case "Sedang Main": return "bg-primary";
+          case "Selesai":     return "bg-success";
+          case "Dibatalkan":  return "bg-secondary";
+          default:            return "bg-light text-dark";
+        }
+      }
+
+      function sel(teks, kelas) {
+        var td = document.createElement("td");
+        if (kelas) td.className = kelas;
+        td.textContent = teks;
+        return td;
+      }
+
+      function render() {
+
+        var dari   = elDari.value;
+        var sampai = elSampai.value;
+
+        var hasil = semuaRiwayat.filter(function (b) {
+          var t = String(b.tanggal || "").substring(0, 10);
+          if (dari && t < dari) return false;
+          if (sampai && t > sampai) return false;
+          return true;
+        });
+
+        tbody.innerHTML = "";
+
+        if (hasil.length === 0) {
+          var tr = document.createElement("tr");
+          var td = document.createElement("td");
+          td.colSpan = 8;
+          td.className = "text-center text-muted py-4";
+          td.textContent = (dari || sampai)
+            ? "Tidak ada riwayat booking pada rentang tanggal ini."
+            : "Belum ada riwayat booking.";
+          tr.appendChild(td);
+          tbody.appendChild(tr);
+        }
+
+        hasil.forEach(function (b, i) {
+          var tr = document.createElement("tr");
+
+          tr.appendChild(sel(i + 1));
+          tr.appendChild(sel(formatTanggal(b.tanggal)));
+          tr.appendChild(sel(String(b.jam_mulai || b.jam || "-").substring(0, 5)));
+          tr.appendChild(sel(b.nama_pelanggan || b.pelanggan || "-"));
+          tr.appendChild(sel(b.ruangan || b.nama_ruangan || "-"));
+          tr.appendChild(sel((b.durasi || "-") + " Jam"));
+          tr.appendChild(sel(formatRupiah(b.total || b.total_biaya)));
+
+          var tdStatus = document.createElement("td");
+          var span = document.createElement("span");
+          span.className = "badge " + kelasStatus(b.status);
+          span.textContent = b.status || "-";
+          tdStatus.appendChild(span);
+          tr.appendChild(tdStatus);
+
+          tbody.appendChild(tr);
+        });
+
+        badge.textContent = hasil.length + " Booking";
+      }
+
+      // Menerima array data riwayat lalu menampilkannya di tabel
+      window.setRiwayatBooking = function (data) {
+        semuaRiwayat = Array.isArray(data) ? data : [];
+        render();
+      };
+
+      // Tampilkan pesan satu baris di tabel (memuat / gagal)
+      function tampilPesan(teks) {
+        tbody.innerHTML = "";
+        var tr = document.createElement("tr");
+        var td = document.createElement("td");
+        td.colSpan = 8;
+        td.className = "text-center text-muted py-4";
+        td.textContent = teks;
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+      }
+
+      // Ambil riwayat dari server (GET /booking/data), dengan filter tanggal bila diisi
+      async function muatRiwayat() {
+
+        var params = new URLSearchParams();
+
+        if (elDari.value)   params.set("dari", elDari.value);
+        if (elSampai.value) params.set("sampai", elSampai.value);
+
+        var url = "/booking/data" + (params.toString() ? "?" + params.toString() : "");
+
+        try {
+
+          var res = await fetch(url, { headers: { "Accept": "application/json" } });
+
+          if (res.status === 401) {
+            window.location.href = "/logout";
+            return;
+          }
+
+          if (!res.ok) {
+            tampilPesan("Gagal memuat riwayat booking.");
+            return;
+          }
+
+          window.setRiwayatBooking(await res.json());
+
+        } catch (e) {
+          tampilPesan("Tidak dapat terhubung ke server.");
+        }
+      }
+
+      elDari.addEventListener("change", muatRiwayat);
+      elSampai.addEventListener("change", muatRiwayat);
+
+      document.getElementById("btnResetFilterTanggal").addEventListener("click", function () {
+        elDari.value = "";
+        elSampai.value = "";
+        muatRiwayat();
+      });
+
+      tampilPesan("Memuat riwayat booking...");
+      muatRiwayat();
+
+
+      // Tutup modal otomatis saat notifikasi sukses muncul
+      var alertSukses = document.getElementById("bookingSuccessAlert");
+
+      if (alertSukses) {
+        new MutationObserver(function () {
+          if (!alertSukses.classList.contains("d-none")) {
+            var tombolTutup = document.querySelector('#modalBooking [data-bs-dismiss="modal"]');
+            if (tombolTutup) tombolTutup.click();
+            muatRiwayat();
+          }
+        }).observe(alertSukses, { attributes: true, attributeFilter: ["class"] });
+      }
+
+    })();
   </script>
 
 </body>

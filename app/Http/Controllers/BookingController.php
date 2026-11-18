@@ -180,4 +180,58 @@ class BookingController extends Controller
 
         return response()->json($hasil);
     }
+
+    // DITAMBAHKAN: riwayat semua booking (terbaru di atas), bisa difilter rentang tanggal
+    public function riwayat(Request $request)
+    {
+        $data = $request->validate([
+            'dari'   => 'nullable|date_format:Y-m-d',
+            'sampai' => 'nullable|date_format:Y-m-d',
+        ]);
+
+        $query = DB::table('tr_booking as b')
+            ->join('ms_customer as c', 'c.id_customer', '=', 'b.id_customer')
+            ->join('ms_ruangan as r', 'r.id_ruangan', '=', 'b.id_ruangan')
+            ->orderByDesc('b.tanggal_booking')
+            ->orderByDesc('b.waktu_mulai')
+            ->limit(500);
+
+        if (!empty($data['dari'])) {
+            $query->where('b.tanggal_booking', '>=', $data['dari']);
+        }
+
+        if (!empty($data['sampai'])) {
+            $query->where('b.tanggal_booking', '<=', $data['sampai']);
+        }
+
+        $baris = $query->get([
+            'b.tanggal_booking',
+            'b.waktu_mulai',
+            'b.estimasi_selesai',
+            'b.status_booking',
+            'c.nama_customer',
+            'r.nama_ruangan',
+            'r.tarif_per_jam',
+        ]);
+
+        $hasil = [];
+
+        foreach ($baris as $b) {
+            $durasi = (int) round(
+                max(0, strtotime($b->estimasi_selesai) - strtotime($b->waktu_mulai)) / 3600
+            );
+
+            $hasil[] = [
+                'tanggal'        => $b->tanggal_booking,
+                'jam_mulai'      => substr($b->waktu_mulai, 0, 5),
+                'nama_pelanggan' => $b->nama_customer,
+                'ruangan'        => $b->nama_ruangan,
+                'durasi'         => $durasi,
+                'total'          => $b->tarif_per_jam * $durasi,
+                'status'         => $b->status_booking,
+            ];
+        }
+
+        return response()->json($hasil);
+    }
 }

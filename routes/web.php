@@ -30,6 +30,7 @@ Route::middleware('cek.login')->group(function () {
 
     Route::post('/booking', [BookingController::class, 'store']);
     Route::get('/booking/jadwal', [BookingController::class, 'jadwal']);
+    Route::get('/booking/data', [BookingController::class, 'riwayat']);
 
     // Khusus superadmin
     Route::middleware('cek.role:superadmin')->group(function () {
