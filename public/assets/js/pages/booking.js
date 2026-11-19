@@ -155,12 +155,11 @@ async function loadRuangan() {
       return;
     }
 
-    daftarRuangan.forEach(function (r) {
+     daftarRuangan.forEach(function (r) {
       const opsi = document.createElement("option");
       opsi.value = r.id_ruangan;
       opsi.textContent = r.nama_ruangan + " (" + namaJenis(r.jenis_ruangan) +
-        " - " + formatRupiah(r.tarif_per_jam) + "/jam)" +
-        (r.status_ruangan === "Digunakan" ? " - sedang digunakan" : "");
+        " - " + formatRupiah(r.tarif_per_jam) + "/jam)";
       select.appendChild(opsi);
     });
 

@@ -109,6 +109,19 @@
     .booking-customer { color: #6c757d; font-size: 13px; }
 
     /* =====================================================
+       HITUNG MUNDUR RUANGAN YANG SEDANG DIGUNAKAN
+    ====================================================== */
+
+    .countdown-box {
+      background: #fdecec;
+      color: #dc3545;
+      font-weight: 700;
+      text-align: center;
+      border-radius: 10px;
+      padding: 10px;
+    }
+
+    /* =====================================================
        POPUP KONFIRMASI LOGOUT
     ====================================================== */
 
@@ -540,171 +553,184 @@
     setInterval(updateDateTime, 1000);
 
 
-  /* =====================================================
-     DATA RUANGAN DARI DATABASE
-  ====================================================== */
+    /* =====================================================
+       DATA DASHBOARD DARI DATABASE (/dashboard/data)
+    ====================================================== */
 
-  // Cegah teks dari database dibaca sebagai HTML
-  function esc(teks) {
-    const div = document.createElement("div");
-    div.textContent = teks == null ? "" : String(teks);
-    return div.innerHTML;
-  }
-
-  function nilai(teks) {
-    return (teks === null || teks === undefined || teks === "") ? "-" : esc(teks);
-  }
-
-  /*
-   * Field tambahan yang dibaca dari /ruangan/data (opsional):
-   *   customer, jam_mulai, jam_selesai,
-   *   jadwal_berikutnya,
-   *   booking: { customer: "...", jam: "19:00 - 22:00" }
-   * Kalau belum ada, tampil "-".
-   */
-  function kartuRuangan(r) {
-
-    const judul =
-      '<h6 class="room-title">' +
-        '<i class="ti ti-device-gamepad-2 room-icon"></i>' + esc(r.nama_ruangan) +
-      '</h6>';
-
-    let badge = "";
-    let isi = "";
-
-    // ---------- DIGUNAKAN ----------
-    if (r.status_ruangan === "Digunakan") {
-
-      badge = '<span class="badge text-bg-danger">Digunakan</span>';
-
-      isi =
-        '<div class="room-info mt-3">Customer : ' + nilai(r.customer) + '</div>' +
-        '<div class="room-info">Mulai : ' + nilai(r.jam_mulai) + '</div>' +
-        '<div class="room-info">Selesai : ' + nilai(r.jam_selesai) + '</div>';
+    // Cegah teks dari database dibaca sebagai HTML
+    function esc(teks) {
+      const div = document.createElement("div");
+      div.textContent = teks == null ? "" : String(teks);
+      return div.innerHTML;
     }
 
-    // ---------- MAINTENANCE ----------
-    else if (r.status_ruangan === "Maintenance") {
-
-      badge = '<span class="badge text-bg-secondary">Maintenance</span>';
-
-      isi =
-        '<div class="room-info mt-3">Sedang dalam perbaikan</div>' +
-        '<div class="text-center text-muted py-3"><i class="ti ti-tool fs-2"></i></div>';
+    function nilai(teks) {
+      return (teks === null || teks === undefined || teks === "") ? "-" : esc(teks);
     }
 
-    // ---------- BOOKING (tersedia tapi sudah ada booking) ----------
-    else if (r.booking) {
-
-      badge = '<span class="badge text-bg-warning">Booking</span>';
-
-      isi =
-        '<div class="room-info mt-3">Customer : ' + nilai(r.booking.customer) + '</div>' +
-        '<div class="room-info">Jam : ' + nilai(r.booking.jam) + '</div>' +
-        '<div class="text-center text-warning py-3"><i class="ti ti-calendar-event fs-2"></i></div>';
+    function pad2(n) {
+      return String(n).padStart(2, "0");
     }
 
-    // ---------- KOSONG ----------
-    else {
+    function kartuRuangan(r) {
 
-      badge = '<span class="badge text-bg-success">Kosong</span>';
+      const judul =
+        '<h6 class="room-title">' +
+          '<i class="ti ti-device-gamepad-2 room-icon"></i>' + esc(r.nama_ruangan) +
+        '</h6>';
 
-      isi =
-        '<div class="room-info mt-3">Jadwal berikutnya : ' + nilai(r.jadwal_berikutnya) + '</div>' +
-        '<div class="text-center text-muted py-3"><i class="ti ti-device-gamepad-2 fs-2"></i></div>';
-    }
+      let badge = "";
+      let isi = "";
 
-    return '' +
-      '<div class="col-md-6 col-xl-4">' +
-        '<div class="room-card">' +
-          '<div class="d-flex justify-content-between align-items-start">' +
-            judul + badge +
-          '</div>' +
-          isi +
-        '</div>' +
-      '</div>';
-  }
+      // ---------- DIGUNAKAN ----------
+      if (r.status === "Digunakan") {
 
-  function itemBooking(r) {
-    return '' +
-      '<div class="booking-item">' +
-        '<div>' +
-          '<div class="booking-time">' + nilai(r.booking.jam) + '</div>' +
-          '<div class="booking-customer">' + nilai(r.booking.customer) + '</div>' +
-        '</div>' +
-        '<span class="badge text-bg-warning">' + esc(r.nama_ruangan) + '</span>' +
-      '</div>';
-  }
+        badge = '<span class="badge text-bg-danger">Digunakan</span>';
 
-  async function loadDashboard() {
-
-    const daftar = document.getElementById("daftarRuangan");
-    const daftarBooking = document.getElementById("daftarBooking");
-
-    try {
-
-      const response = await fetch("/ruangan/data", {
-        method: "GET",
-        headers: { "Accept": "application/json" }
-      });
-
-      if (response.status === 401) {
-        window.location.href = "/logout";
-        return;
-      }
-
-      if (!response.ok) {
-        daftar.innerHTML = '<div class="col-12 text-center text-danger py-4">Gagal memuat data ruangan.</div>';
-        return;
-      }
-
-      const rooms = await response.json();
-
-      // Statistik
-      const digunakan = rooms.filter(function (r) {
-        return r.status_ruangan === "Digunakan";
-      }).length;
-
-      const dibooking = rooms.filter(function (r) {
-        return r.status_ruangan === "Tersedia" && r.booking;
-      });
-
-      const kosong = rooms.filter(function (r) {
-        return r.status_ruangan === "Tersedia" && !r.booking;
-      }).length;
-
-      document.getElementById("statTotal").textContent = rooms.length;
-      document.getElementById("statDigunakan").textContent = digunakan;
-      document.getElementById("statBooking").textContent = dibooking.length;
-      document.getElementById("statKosong").textContent = kosong;
-
-      // Kartu ruangan
-      if (rooms.length === 0) {
-        daftar.innerHTML = '<div class="col-12 text-center text-muted py-4">Belum ada data ruangan.</div>';
-      } else {
-        daftar.innerHTML = rooms.map(kartuRuangan).join("");
-      }
-
-      // Booking hari ini
-      const adaBooking = rooms.filter(function (r) { return r.booking; });
-
-      if (adaBooking.length === 0) {
-        daftarBooking.innerHTML =
-          '<div class="text-center text-muted py-4">' +
-            '<i class="ti ti-calendar-off fs-2 d-block mb-2"></i>Belum ada booking' +
+        isi =
+          '<div class="room-info mt-3">Customer : ' + nilai(r.customer) + '</div>' +
+          '<div class="room-info">Mulai : ' + nilai(r.jam_mulai) + '</div>' +
+          '<div class="room-info">Selesai : ' + nilai(r.jam_selesai) + '</div>' +
+          '<div class="countdown-box mt-3" data-akhir="' + (Date.now() + (r.sisa_detik || 0) * 1000) + '">' +
+            '<i class="ti ti-clock me-1"></i><span class="countdown-teks">--:--:--</span>' +
           '</div>';
-      } else {
-        daftarBooking.innerHTML = adaBooking.map(itemBooking).join("");
       }
 
-    } catch (e) {
-      daftar.innerHTML = '<div class="col-12 text-center text-danger py-4">Tidak dapat terhubung ke server.</div>';
+      // ---------- MAINTENANCE ----------
+      else if (r.status === "Maintenance") {
+
+        badge = '<span class="badge text-bg-secondary">Maintenance</span>';
+
+        isi =
+          '<div class="room-info mt-3">Sedang dalam perbaikan</div>' +
+          '<div class="text-center text-muted py-3"><i class="ti ti-tool fs-2"></i></div>';
+      }
+
+      // ---------- BOOKING (belum dimulai) ----------
+      else if (r.status === "Booking" && r.booking) {
+
+        badge = '<span class="badge text-bg-warning">Booking</span>';
+
+        isi =
+          '<div class="room-info mt-3">Customer : ' + nilai(r.booking.customer) + '</div>' +
+          '<div class="room-info">Jam : ' + nilai(r.booking.jam) + '</div>' +
+          '<div class="text-center text-warning py-3"><i class="ti ti-calendar-event fs-2"></i></div>';
+      }
+
+      // ---------- KOSONG ----------
+      else {
+
+        badge = '<span class="badge text-bg-success">Kosong</span>';
+
+        isi =
+          '<div class="room-info mt-3">Belum ada booking hari ini</div>' +
+          '<div class="text-center text-muted py-3"><i class="ti ti-device-gamepad-2 fs-2"></i></div>';
+      }
+
+      return '' +
+        '<div class="col-md-6 col-xl-4">' +
+          '<div class="room-card">' +
+            '<div class="d-flex justify-content-between align-items-start">' +
+              judul + badge +
+            '</div>' +
+            isi +
+          '</div>' +
+        '</div>';
     }
 
-  }
+    function itemBooking(b) {
+      return '' +
+        '<div class="booking-item">' +
+          '<div>' +
+            '<div class="booking-time">' + nilai(b.jam) + '</div>' +
+            '<div class="booking-customer">' + nilai(b.customer) + '</div>' +
+          '</div>' +
+          '<span class="badge text-bg-warning">' + esc(b.nama_ruangan) + '</span>' +
+        '</div>';
+    }
 
-  loadDashboard();
-  setInterval(loadDashboard, 30000); // perbarui otomatis tiap 30 detik
+    async function loadDashboard() {
+
+      const daftar = document.getElementById("daftarRuangan");
+      const daftarBooking = document.getElementById("daftarBooking");
+
+      try {
+
+        const response = await fetch("/dashboard/data", {
+          method: "GET",
+          headers: { "Accept": "application/json" }
+        });
+
+        if (response.status === 401) {
+          window.location.href = "/logout";
+          return;
+        }
+
+        if (!response.ok) {
+          daftar.innerHTML = '<div class="col-12 text-center text-danger py-4">Gagal memuat data dashboard.</div>';
+          return;
+        }
+
+        const data = await response.json();
+        const s = data.ringkasan;
+
+        // Statistik
+        document.getElementById("statTotal").textContent = s.total;
+        document.getElementById("statDigunakan").textContent = s.digunakan;
+        document.getElementById("statBooking").textContent = s.booking;
+        document.getElementById("statKosong").textContent = s.kosong;
+
+        // Kartu ruangan
+        if (data.ruangan.length === 0) {
+          daftar.innerHTML = '<div class="col-12 text-center text-muted py-4">Belum ada data ruangan.</div>';
+        } else {
+          daftar.innerHTML = data.ruangan.map(kartuRuangan).join("");
+        }
+
+        // Booking hari ini
+        if (data.booking_hari_ini.length === 0) {
+          daftarBooking.innerHTML =
+            '<div class="text-center text-muted py-4">' +
+              '<i class="ti ti-calendar-off fs-2 d-block mb-2"></i>Belum ada booking' +
+            '</div>';
+        } else {
+          daftarBooking.innerHTML = data.booking_hari_ini.map(itemBooking).join("");
+        }
+
+        tickCountdown();
+
+      } catch (e) {
+        daftar.innerHTML = '<div class="col-12 text-center text-danger py-4">Tidak dapat terhubung ke server.</div>';
+      }
+
+    }
+
+    // Hitung mundur untuk ruangan yang sedang digunakan
+    function tickCountdown() {
+
+      document.querySelectorAll(".countdown-box").forEach(function (el) {
+
+        const sisa = Math.max(0, Math.round((Number(el.dataset.akhir) - Date.now()) / 1000));
+
+        el.querySelector(".countdown-teks").textContent =
+          pad2(Math.floor(sisa / 3600)) + ":" +
+          pad2(Math.floor((sisa % 3600) / 60)) + ":" +
+          pad2(sisa % 60);
+
+        // Waktu habis: muat ulang supaya status ruangan ikut berubah
+        if (sisa === 0 && !el.dataset.habis) {
+          el.dataset.habis = "1";
+          loadDashboard();
+        }
+
+      });
+
+    }
+
+    setInterval(tickCountdown, 1000);
+
+    loadDashboard();
+    setInterval(loadDashboard, 30000); // perbarui otomatis tiap 30 detik
 
     /* =====================================================
        LOGOUT (popup di tengah halaman)

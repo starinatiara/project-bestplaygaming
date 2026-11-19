@@ -130,6 +130,11 @@
     .btn-logout-cancel:hover { background: #e2e8f0; color: #1e293b; }
     .btn-logout-confirm { background: #dc3545; border: 1px solid #dc3545; color: #ffffff; }
     .btn-logout-confirm:hover { background: #bb2d3b; border-color: #bb2d3b; color: #ffffff; }
+    
+    #jadwalTerisi,
+    #jadwalTerisi * {
+      color: #dc3545 !important;
+    }
   </style>
 </head>
 

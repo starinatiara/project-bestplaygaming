@@ -234,4 +234,142 @@ class BookingController extends Controller
 
         return response()->json($hasil);
     }
+
+    // =====================================================================
+    // DITAMBAHKAN: STATUS RUANGAN DI HALAMAN /ruangan
+    // =====================================================================
+
+    // Perbarui status booking sesuai waktu sekarang:
+    // Booking -> Sedang Main (jam mulai tiba) -> Selesai (jam selesai lewat)
+    public static function sinkronStatus(): void
+    {
+        $sekarang = Carbon::now(self::ZONA);
+        $tanggal  = $sekarang->toDateString();
+        $jam      = $sekarang->format('H:i:s');
+
+        // Jam selesai sudah lewat (atau tanggalnya sudah kemarin) -> Selesai
+        DB::table('tr_booking')
+            ->whereIn('status_booking', self::STATUS_AKTIF)
+            ->where(function ($q) use ($tanggal, $jam) {
+                $q->where('tanggal_booking', '<', $tanggal)
+                  ->orWhere(function ($q2) use ($tanggal, $jam) {
+                      $q2->where('tanggal_booking', $tanggal)
+                         ->where('estimasi_selesai', '<=', $jam);
+                  });
+            })
+            ->update(['status_booking' => 'Selesai']);
+
+        // Jam mulai sudah tiba dan belum lewat jam selesai -> Sedang Main
+        DB::table('tr_booking')
+            ->where('status_booking', 'Booking')
+            ->where('tanggal_booking', $tanggal)
+            ->where('waktu_mulai', '<=', $jam)
+            ->where('estimasi_selesai', '>', $jam)
+            ->update(['status_booking' => 'Sedang Main']);
+    }
+
+    // Data jadwal semua ruangan untuk hari ini (dipakai halaman /ruangan)
+    public function jadwalRuangan()
+    {
+        self::sinkronStatus();
+
+        $tanggal = Carbon::now(self::ZONA)->toDateString();
+
+        $booking = DB::table('tr_booking as b')
+            ->join('ms_customer as c', 'c.id_customer', '=', 'b.id_customer')
+            ->where('b.tanggal_booking', $tanggal)
+            ->whereIn('b.status_booking', self::STATUS_AKTIF)
+            ->orderBy('b.waktu_mulai')
+            ->get([
+                'b.id_booking',
+                'b.id_ruangan',
+                'b.waktu_mulai',
+                'b.estimasi_selesai',
+                'b.status_booking',
+                'c.nama_customer',
+            ])
+            ->groupBy('id_ruangan');
+
+        $ruangan = DB::table('ms_ruangan')
+            ->orderBy('id_ruangan')
+            ->get(['id_ruangan', 'nama_ruangan', 'jenis_ruangan', 'status_ruangan']);
+
+        $hasil = [];
+
+        foreach ($ruangan as $r) {
+            $daftar = [];
+
+            foreach ($booking->get($r->id_ruangan, collect()) as $b) {
+                $daftar[] = [
+                    'id_booking' => $b->id_booking,
+                    'mulai'      => substr($b->waktu_mulai, 0, 5),
+                    'selesai'    => substr($b->estimasi_selesai, 0, 5),
+                    'status'     => $b->status_booking,
+                    'nama'       => $b->nama_customer,
+                ];
+            }
+
+            $hasil[] = [
+                'id_ruangan'     => $r->id_ruangan,
+                'nama_ruangan'   => $r->nama_ruangan,
+                'jenis_ruangan'  => $r->jenis_ruangan,
+                'status_ruangan' => $r->status_ruangan,
+                'booking'        => $daftar,
+            ];
+        }
+
+        return response()->json([
+            'tanggal' => $tanggal,
+            'ruangan' => $hasil,
+        ]);
+    }
+
+    // Tombol "Selesai": hanya untuk booking yang sedang berjalan.
+    // Status menjadi Selesai, sehingga ikut masuk laporan.
+    public function selesai($id)
+    {
+        return $this->ubahStatus(
+            $id,
+            'Selesai',
+            ['Sedang Main'],
+            'Booking ditandai selesai.',
+            'Hanya booking yang sedang berjalan yang bisa diselesaikan.'
+        );
+    }
+
+    // Tombol "Batalkan": booking menjadi Dibatalkan, tidak masuk laporan.
+    public function batal($id)
+    {
+        return $this->ubahStatus(
+            $id,
+            'Dibatalkan',
+            self::STATUS_AKTIF,
+            'Booking berhasil dibatalkan.',
+            'Booking ini sudah selesai atau dibatalkan, jadi tidak dapat dibatalkan lagi.'
+        );
+    }
+
+    // Ubah status satu booking, hanya jika status sekarang termasuk $statusAsal
+    private function ubahStatus($id, string $statusBaru, array $statusAsal, string $pesanSukses, string $pesanGagal)
+    {
+        // Pastikan status sudah mengikuti waktu sebelum diperiksa
+        self::sinkronStatus();
+
+        $booking = DB::table('tr_booking')->where('id_booking', $id)->first();
+
+        if (!$booking) {
+            return response()->json(['message' => 'Booking tidak ditemukan.'], 404);
+        }
+
+        $diubah = DB::table('tr_booking')
+            ->where('id_booking', $id)
+            ->whereIn('status_booking', $statusAsal)
+            ->update(['status_booking' => $statusBaru]);
+
+        if (!$diubah) {
+            return response()->json(['message' => $pesanGagal], 422);
+        }
+
+        return response()->json(['message' => $pesanSukses]);
+    }
 }

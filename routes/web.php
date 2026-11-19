@@ -6,6 +6,7 @@ use App\Http\Controllers\ProfilController;
 use App\Http\Controllers\RuanganController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DashboardController;
 
 Route::redirect('/', '/login');
 
@@ -26,11 +27,17 @@ Route::middleware('cek.login')->group(function () {
     Route::get('/profil/data', [ProfilController::class, 'show']);
     Route::put('/profil', [ProfilController::class, 'update']);
 
+    Route::get('/dashboard/data', [DashboardController::class, 'data']);
+
     Route::get('/ruangan/data', [RuanganController::class, 'index']);
 
     Route::post('/booking', [BookingController::class, 'store']);
     Route::get('/booking/jadwal', [BookingController::class, 'jadwal']);
     Route::get('/booking/data', [BookingController::class, 'riwayat']);
+
+    Route::get('/ruangan/jadwal', [BookingController::class, 'jadwalRuangan']);
+    Route::post('/booking/{id}/selesai', [BookingController::class, 'selesai']);
+    Route::post('/booking/{id}/batal', [BookingController::class, 'batal']);
 
     // Khusus superadmin
     Route::middleware('cek.role:superadmin')->group(function () {
