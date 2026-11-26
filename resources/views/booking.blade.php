@@ -594,6 +594,13 @@
         var dari   = elDari.value;
         var sampai = elSampai.value;
 
+        // Belum ada filter tanggal: tabel dikosongkan
+        if (!dari && !sampai) {
+          tampilPesan("Atur filter tanggal untuk menampilkan riwayat booking.");
+          badge.textContent = "0 Booking";
+          return;
+        }
+
         var hasil = semuaRiwayat.filter(function (b) {
           var t = String(b.tanggal || "").substring(0, 10);
           if (dari && t < dari) return false;
@@ -608,9 +615,7 @@
           var td = document.createElement("td");
           td.colSpan = 8;
           td.className = "text-center text-muted py-4";
-          td.textContent = (dari || sampai)
-            ? "Tidak ada riwayat booking pada rentang tanggal ini."
-            : "Belum ada riwayat booking.";
+          td.textContent = "Tidak ada riwayat booking pada rentang tanggal ini.";
           tr.appendChild(td);
           tbody.appendChild(tr);
         }
@@ -660,6 +665,15 @@
       // Ambil riwayat dari server (GET /booking/data), dengan filter tanggal bila diisi
       async function muatRiwayat() {
 
+        // Tanpa filter tanggal, tidak ada data yang diambil
+        if (!elDari.value && !elSampai.value) {
+          semuaRiwayat = [];
+          render();
+          return;
+        }
+
+        tampilPesan("Memuat riwayat booking...");
+
         var params = new URLSearchParams();
 
         if (elDari.value)   params.set("dari", elDari.value);
@@ -697,7 +711,7 @@
         muatRiwayat();
       });
 
-      tampilPesan("Memuat riwayat booking...");
+      // Saat halaman dibuka: tabel kosong sampai filter diatur
       muatRiwayat();
 
 
