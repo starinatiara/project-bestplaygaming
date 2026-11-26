@@ -372,4 +372,162 @@ class BookingController extends Controller
 
         return response()->json(['message' => $pesanSukses]);
     }
+
+    // =====================================================================
+    // DITAMBAHKAN: HALAMAN TRACKING (SEWA YANG SEDANG BERJALAN)
+    // =====================================================================
+
+    // Ubah "HH:MM:SS" menjadi jumlah detik sejak tengah malam
+    private static function keDetik(string $waktu): int
+    {
+        $p = array_map('intval', explode(':', $waktu));
+
+        return ($p[0] ?? 0) * 3600 + ($p[1] ?? 0) * 60 + ($p[2] ?? 0);
+    }
+
+    // Ubah jumlah detik menjadi "HH:MM:SS"
+    private static function dariDetik(int $detik): string
+    {
+        return sprintf('%02d:%02d:%02d', intdiv($detik, 3600), intdiv($detik % 3600, 60), $detik % 60);
+    }
+
+    // Berapa jam (maksimal 5) sewa ini masih bisa diperpanjang.
+    // Dibatasi oleh booking berikutnya di ruangan yang sama dan batas pukul 24.00.
+    private static function maksTambahJam(object $booking): int
+    {
+        $akhir = self::keDetik($booking->estimasi_selesai);
+
+        // Sewa harus tetap selesai sebelum pukul 24.00
+        $sisaHari = intdiv(86399 - $akhir, 3600);
+
+        $berikut = DB::table('tr_booking')
+            ->where('id_ruangan', $booking->id_ruangan)
+            ->where('tanggal_booking', $booking->tanggal_booking)
+            ->where('id_booking', '<>', $booking->id_booking)
+            ->whereIn('status_booking', self::STATUS_AKTIF)
+            ->where('waktu_mulai', '>=', $booking->estimasi_selesai)
+            ->orderBy('waktu_mulai')
+            ->first();
+
+        $batas = $sisaHari;
+
+        if ($berikut) {
+            $batas = min($batas, intdiv(self::keDetik($berikut->waktu_mulai) - $akhir, 3600));
+        }
+
+        return max(0, min(5, $batas));
+    }
+
+    // Daftar ruangan yang sedang disewa saat ini
+    public function tracking()
+    {
+        self::sinkronStatus();
+
+        $sekarang = Carbon::now(self::ZONA);
+        $tanggal  = $sekarang->toDateString();
+
+        $baris = DB::table('tr_booking as b')
+            ->join('ms_customer as c', 'c.id_customer', '=', 'b.id_customer')
+            ->join('ms_ruangan as r', 'r.id_ruangan', '=', 'b.id_ruangan')
+            ->where('b.tanggal_booking', $tanggal)
+            ->where('b.status_booking', 'Sedang Main')
+            ->orderBy('b.waktu_mulai')
+            ->get([
+                'b.id_booking',
+                'b.id_ruangan',
+                'b.tanggal_booking',
+                'b.waktu_mulai',
+                'b.estimasi_selesai',
+                'c.nama_customer',
+                'r.nama_ruangan',
+                'r.jenis_ruangan',
+                'r.tarif_per_jam',
+            ]);
+
+        $hasil = [];
+
+        foreach ($baris as $b) {
+            $mulai = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal . ' ' . $b->waktu_mulai, self::ZONA);
+            $akhir = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal . ' ' . $b->estimasi_selesai, self::ZONA);
+
+            $totalDetik = max(1, $akhir->timestamp - $mulai->timestamp);
+            $sisaDetik  = max(0, $akhir->timestamp - $sekarang->timestamp);
+            $durasiJam  = (int) round($totalDetik / 3600);
+
+            $hasil[] = [
+                'id_booking'    => $b->id_booking,
+                'nama_ruangan'  => $b->nama_ruangan,
+                'jenis_ruangan' => $b->jenis_ruangan,
+                'customer'      => $b->nama_customer,
+                'mulai'         => substr($b->waktu_mulai, 0, 5),
+                'selesai'       => substr($b->estimasi_selesai, 0, 5),
+                'durasi_jam'    => $durasiJam,
+                'tarif_per_jam' => (int) $b->tarif_per_jam,
+                'total_sewa'    => (int) $b->tarif_per_jam * $durasiJam,
+                'total_detik'   => $totalDetik,
+                'sisa_detik'    => $sisaDetik,
+                'maks_tambah'   => self::maksTambahJam($b),
+            ];
+        }
+
+        return response()->json($hasil);
+    }
+
+    // Tombol "Perpanjang Waktu": menambah jam sewa yang sedang berjalan
+    public function perpanjang(Request $request, $id)
+    {
+        $data = $request->validate([
+            'tambah_jam' => 'required|integer|min:1|max:5',
+        ], [
+            'tambah_jam.required' => 'Pilih tambahan waktu terlebih dahulu.',
+            'tambah_jam.integer'  => 'Tambahan waktu tidak valid.',
+            'tambah_jam.min'      => 'Tambahan waktu minimal 1 jam.',
+            'tambah_jam.max'      => 'Tambahan waktu maksimal 5 jam.',
+        ]);
+
+        // Pastikan status sudah mengikuti waktu sebelum diperiksa
+        self::sinkronStatus();
+
+        $hasil = DB::transaction(function () use ($id, $data) {
+            $booking = DB::table('tr_booking')->where('id_booking', $id)->lockForUpdate()->first();
+
+            if (!$booking) {
+                return ['kode' => 404, 'message' => 'Booking tidak ditemukan.'];
+            }
+
+            if ($booking->status_booking !== 'Sedang Main') {
+                return ['kode' => 422, 'message' => 'Hanya sewa yang sedang berjalan yang dapat diperpanjang.'];
+            }
+
+            // Kunci baris ruangan supaya tidak bentrok dengan booking baru di saat yang sama
+            DB::table('ms_ruangan')->where('id_ruangan', $booking->id_ruangan)->lockForUpdate()->first();
+
+            $maks = self::maksTambahJam($booking);
+
+            if ($data['tambah_jam'] > $maks) {
+                return [
+                    'kode'    => 422,
+                    'message' => $maks <= 0
+                        ? 'Sewa tidak dapat diperpanjang karena ada booking berikutnya atau sudah mendekati pukul 24.00.'
+                        : 'Perpanjangan maksimal ' . $maks . ' jam karena ada booking berikutnya atau batas pukul 24.00.',
+                ];
+            }
+
+            $akhirBaru = self::dariDetik(
+                self::keDetik($booking->estimasi_selesai) + $data['tambah_jam'] * 3600
+            );
+
+            DB::table('tr_booking')
+                ->where('id_booking', $id)
+                ->update(['estimasi_selesai' => $akhirBaru]);
+
+            return [
+                'kode'    => 200,
+                'message' => 'Waktu sewa diperpanjang ' . $data['tambah_jam'] . ' jam, selesai pukul '
+                    . substr($akhirBaru, 0, 5) . '.',
+            ];
+        });
+
+        return response()->json(['message' => $hasil['message']], $hasil['kode']);
+    }
 }

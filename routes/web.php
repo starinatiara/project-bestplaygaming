@@ -39,6 +39,9 @@ Route::middleware('cek.login')->group(function () {
     Route::post('/booking/{id}/selesai', [BookingController::class, 'selesai']);
     Route::post('/booking/{id}/batal', [BookingController::class, 'batal']);
 
+    Route::get('/tracking/data', [BookingController::class, 'tracking']);
+    Route::post('/booking/{id}/perpanjang', [BookingController::class, 'perpanjang']);
+
     // Khusus superadmin
     Route::middleware('cek.role:superadmin')->group(function () {
         Route::view('/user', 'user')->middleware('no.direct');
